@@ -148,3 +148,4 @@ dmypy.json
 *.synctex.gz
 
 docs_build/
+.vscode/
