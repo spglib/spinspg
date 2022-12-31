@@ -51,7 +51,7 @@ def get_spin_only_group(magmoms: NDArrayFloat, mag_symprec: float) -> SpinOnlyGr
 
     Parameters
     ----------
-    magmoms : array, (N, 3)
+    magmoms : array, (num_sites, 3)
         Magnetic moments in Cartesian coordinates
 
     Returns
