@@ -3,11 +3,17 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import numpy as np
+from hsnf import column_style_hermite_normal_form
 from spglib import get_symmetry_dataset
 
 from spinspg.permutation import Permutation, get_symmetry_permutations
-from spinspg.spin import SpinOnlyGroup
-from spinspg.utils import NDArrayFloat, NDArrayInt, ndarray2d_to_integer_tuple
+from spinspg.spin import SpinOnlyGroup, get_spin_only_group, solve_procrustes
+from spinspg.utils import (
+    NDArrayFloat,
+    NDArrayInt,
+    is_integer_array,
+    ndarray2d_to_integer_tuple,
+)
 
 
 @dataclass
@@ -71,7 +77,7 @@ def get_symmetry_with_cell(
 
     # Primitive transformation
     tmat = np.linalg.inv(prim_lattice.T) @ lattice.T
-    assert np.allclose(np.abs(np.linalg.det(tmat)), len(centerings))
+    assert np.isclose(np.abs(np.linalg.det(tmat)), len(centerings))
 
     # Permutations of sites
     prim_permutations = get_symmetry_permutations(
@@ -141,11 +147,135 @@ class SpinSpaceGroup:
     spin_only_group: SpinOnlyGroup
     spin_translation_coset: list[SpinSymmetryOperation]
         N.B. translation parts are distinct
+    centerings: array, (?, 3)
     nontrivial_coset: list[SpinSymmetryOperation]
         N.B. rotation parts are distinct
+    transformation: array[int], (3, 3)
+        Transformation matrix from primitive to given cell
     """
 
     prim_lattice: NDArrayFloat
     spin_only_group: SpinOnlyGroup
     spin_translation_coset: list[SpinSymmetryOperation]
+    prim_centerings: NDArrayFloat
     nontrivial_coset: list[SpinSymmetryOperation]
+    transformation: NDArrayInt
+
+
+def get_spin_space_group(
+    nonmagnetic_symmetry: NonmagneticSymmetry, magmoms: NDArrayFloat, mag_symprec: float
+) -> SpinSpaceGroup:
+    """Return spin space group symmetry.
+
+    Parameters
+    ----------
+    nonmagnetic_symmetry : NonmagneticSymmetry
+    magmoms : array, (num_sites, 3)
+    mag_symprec : float
+
+    Returns
+    -------
+    SpinSpaceGroup
+    """
+    # Centerings for maximal space subgroup of spin space group
+    stg_centerings = []
+    stg_centering_permutations = []
+    for centering, perm in zip(
+        nonmagnetic_symmetry.prim_centerings, nonmagnetic_symmetry.prim_centering_permutations
+    ):
+        if np.max(np.linalg.norm(magmoms[perm.permutation] - magmoms, axis=1)) < mag_symprec:
+            stg_centerings.append(centering)
+            stg_centering_permutations.append(perm)
+
+    # Transformation matrix to primitive cell of maximal space subgroup
+    stg_vectors = np.concatenate(
+        [
+            nonmagnetic_symmetry.transformation,  # (3, 3)
+            np.array(stg_centerings).T,  # (3, ?)
+        ],
+        axis=1,
+    )
+    tmat_stg, _ = column_style_hermite_normal_form(stg_vectors)
+    tmat_stg = tmat_stg[:, :3]  # (3, 3)
+    tmatinv_stg = np.linalg.inv(tmat_stg)
+    assert np.isclose(np.abs(np.linalg.det(tmat_stg)), len(stg_centerings))
+
+    # Spin translation group search
+    spin_translation_coset = []
+    found_stg_centerings = set()
+    for centering, perm in zip(
+        nonmagnetic_symmetry.prim_centerings, nonmagnetic_symmetry.prim_centering_permutations
+    ):
+        reduced_centering = tmatinv_stg @ centering
+        reduced_centering -= np.rint(reduced_centering)
+        reduced_centering = tuple(np.around(tmat_stg @ reduced_centering).astype(np.int_))
+        if reduced_centering in found_stg_centerings:
+            continue
+        found_stg_centerings.add(reduced_centering)
+
+        # Search W in O(3) s.t. new_magmoms @ W.T = magmoms[perm.permutation]
+        new_magmoms = magmoms.copy()
+        perm_magmoms = magmoms[perm.permutation]
+        W = solve_procrustes(new_magmoms, perm_magmoms)
+        new_magmoms = new_magmoms @ W.T
+        if np.max(np.linalg.norm(new_magmoms - perm_magmoms, axis=1)) < mag_symprec:
+            # w.r.t. primitive cell of spin space group
+            spin_translation_coset.append(
+                SpinSymmetryOperation(
+                    rotation=np.eye(3, dtype=np.int_),
+                    translation=tmatinv_stg @ centering,
+                    spin_rotation=W,
+                )
+            )
+
+    # Transform centerings to primitive cell of spin space group
+    prim_lattice = nonmagnetic_symmetry.prim_lattice @ tmat_stg
+    prim_centerings = [tmatinv_stg @ centering for centering in stg_centerings]
+    transformation = (
+        np.linalg.inv(prim_lattice)
+        @ nonmagnetic_symmetry.prim_lattice
+        @ nonmagnetic_symmetry.transformation
+    )
+
+    # Spin only group
+    spin_only_group = get_spin_only_group(magmoms, mag_symprec)
+
+    # Spin space group search
+    nontrivial_coset = []
+    for rot, trans, perm in zip(
+        nonmagnetic_symmetry.prim_rotations,
+        nonmagnetic_symmetry.prim_translations,
+        nonmagnetic_symmetry.prim_permutations,
+    ):
+        # Point group symmetry compatible with the primitive cell
+        rot_prim = tmatinv_stg @ rot @ tmat_stg
+        if not is_integer_array(rot_prim):
+            continue
+
+        # Need to consider centerings for subgroup
+        for centering, centering_perm in zip(stg_centerings, stg_centering_permutations):
+            new_perm: Permutation = centering_perm * perm
+            new_magmoms = magmoms.copy()
+            perm_magmoms = magmoms[new_perm.permutation]
+            W = solve_procrustes(new_magmoms, perm_magmoms)
+            new_magmoms = new_magmoms @ W.T
+            if np.max(np.linalg.norm(new_magmoms - perm_magmoms, axis=1)) < mag_symprec:
+                # w.r.t. primitive cell of spin space group
+                new_trans = centering + trans
+                nontrivial_coset.append(
+                    SpinSymmetryOperation(
+                        rotation=rot_prim,
+                        translation=tmatinv_stg @ new_trans,
+                        spin_rotation=W,
+                    )
+                )
+                break
+
+    return SpinSpaceGroup(
+        prim_lattice=prim_lattice,
+        spin_only_group=spin_only_group,
+        spin_translation_coset=spin_translation_coset,
+        prim_centerings=prim_centerings,
+        nontrivial_coset=nontrivial_coset,
+        transformation=transformation,
+    )

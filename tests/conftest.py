@@ -18,8 +18,9 @@ def fcc():
         [
             [0, 0, 1],
             [0, 0, 1],
-            [2, 0, 0],
-            [2, 0, 0],
-        ]
+            [1, 0, 0],
+            [1, 0, 0],
+        ],
+        dtype=np.float_,
     )
     return lattice, positions, numbers, magmoms

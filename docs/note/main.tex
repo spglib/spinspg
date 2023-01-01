@@ -34,6 +34,9 @@
 \usepackage{geometry}
 % citation
 \usepackage{cite}
+% Tikz
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes}
 
 \usepackage{bm}
 
@@ -243,13 +246,16 @@ A space group of $(\bm{A}, \bm{X}, \bm{T})$ is written as a stabilizer subgroup 
                 g = ( \overline{\bm{R}}, \overline{\bm{v}} )_{\bm{A}} \in \mathrm{E}(3)
             }{
                 \begin{array}{l}
+                    \overline{\bm{R}} \in \mathbb{Z}^{3 \times 3} \\
                     \exists \sigma_{g} \in \mathfrak{S}_{N}, \forall i, \\
                     \overline{\bm{R}} \bm{x}_{i} + \overline{\bm{v}} \equiv \bm{x}_{\sigma_{g}(i)} \, (\mathrm{mod} \, 1) \\
                     t_{i} = t_{\sigma_{g}(i)}
                 \end{array}
             },
 \end{align}
-where $\mathfrak{S}_{N}$ is a symmetric group of degree $N$ and $( \overline{\bm{R}}, \overline{\bm{v}} )_{\bm{A}} \coloneqq ( \bm{A}\overline{\bm{R}}\bm{A}^{-1}, \bm{A}\overline{\bm{v}} )$.
+where $\mathfrak{S}_{N}$ is a symmetric group of degree $N$ and $( \overline{\bm{R}}, \overline{\bm{v}} )_{\bm{A}} \coloneqq ( \bm{A}\overline{\bm{R}}\bm{A}^{-1}, \bm{A}\overline{\bm{v}} )$ \footnote {
+  The condition $\overline{\bm{R}} \in \mathbb{Z}^{3 \times 3}$ corresponds to Spglib's convention to omit symmetry operations that do not preserve a supercell.
+}.
 
 Let $\bm{A}_{\mathcal{S}}$ be one of primitive basis vectors for $(\bm{A}, \bm{X}, \bm{T})$.
 We write a translation subgroup formed by basis vector $\bm{A}$ as
@@ -263,7 +269,13 @@ Then we consider a finite coset decomposition of $\mathcal{S}$,
       \left( \bm{E}, \overline{ \bm{t} }^{\mathcal{S}} \right)_{ \bm{A}_{\mathcal{S}} }
       \mathcal{T}_{\bm{A}} \\
   \mathcal{S}
-    &= \bigsqcup_{ \overline{\bm{R}}^{\mathcal{S}} } \bigsqcup_{ \overline{ \bm{t} }^{\mathcal{S}} }
+    &= \bigsqcup_{
+          \overline{\bm{R}}^{\mathcal{S}} \in \bm{A}_{\mathcal{S}}^{-1} \mathcal{P}(\mathcal{S}) \bm{A}_{\mathcal{S}}
+      }
+      \bigsqcup_{
+          \left( \bm{E}, \overline{ \bm{t} }^{\mathcal{S}} \right)_{ \bm{A}_{\mathcal{S}} } \mathcal{T}_{\bm{A}}
+          \in \mathcal{T}_{\bm{A}_{\mathcal{S}}} / \mathcal{T}_{\bm{A}}
+      }
       \left(
         \overline{\bm{R}}^{\mathcal{S}},
         \overline{ \bm{v} }^{\mathcal{S}}(\overline{\bm{R}}^{\mathcal{S}})
@@ -373,6 +385,39 @@ A spin-only group of a noncoplanar spin arrangement is $\mathcal{P}_{\mathrm{so}
 
 \subsection{Translation subgroup of maximal space subgroup}
 
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \coordinate (TA) at (0, 0);
+    \coordinate (TAD) at (0, 2);
+    \coordinate (TAS) at (0, 4);
+    \coordinate (SD) at (2, 3);
+    \coordinate (mid) at (2, 5);
+    \coordinate (S) at (4, 6);
+
+    \node at (TA) [left] {$\mathcal{T}_{\bm{A}}$};
+    \node at (TAD) [left] {$\mathcal{T}_{\bm{A}_{\mathcal{D}}}$};
+    \node at (TAS) [left] {$\mathcal{T}_{\bm{A}_{\mathcal{S}}}$};
+    \node at (SD) [right] {$\mathcal{S}_{\mathcal{D}}$};
+    \node at (S) [right] {$\mathcal{S}$};
+
+    \fill[black] (TA) circle (2pt);
+    \fill[black] (TAD) circle (2pt);
+    \fill[black] (TAS) circle (2pt);
+    \fill[black] (SD) circle (2pt);
+    \fill[black] (mid) circle (2pt);
+    \fill[black] (S) circle (2pt);
+
+    \draw (TA) -- (TAD);
+    \draw (TAD) -- (TAS);
+    \draw (TAD) -- (SD);
+    \draw (TAS) -- (mid);
+    \draw (SD) -- (mid);
+    \draw (mid) -- (S);
+  \end{tikzpicture}
+  \caption{\label{fig:translation_subgroup}Group-subgroup diagram of translation subgroups derived from spin space group.}
+\end{figure}
+
 We write the primitive basis vectors of $\mathcal{T}(\mathcal{D})$ as $\bm{A}_{\mathcal{D}}$.
 First, we search for $\mathcal{T}(\mathcal{D}) = \mathcal{T}_{\bm{A}_{\mathcal{D}}} = \set{ (\bm{E}, \bm{v}) }{ (\bm{E}, (\bm{E}, \bm{v})) \in \mathcal{G} }$.
 Since $\mathcal{T}_{\bm{A}_{\mathcal{D}}}$ is a subgroup of $\mathcal{T}_{\bm{A}_{\mathcal{S}}}$, we only need to check finite coset representatives of $\mathcal{T}_{\bm{A}} / \mathcal{T}_{\bm{A}_{\mathcal{S}}}$.
@@ -382,7 +427,7 @@ The two basis vectors $\bm{A}$ and $\bm{A}_{\mathcal{S}}$ are related by an inte
 \end{align}
 We can find translations in $\mathcal{T}_{\bm{A}_{\mathcal{D}}}$ as
 \begin{align}
-  \mathcal{T}_{\bm{A}_{\mathcal{D}}}
+  \mathcal{T}_{\bm{A}_{\mathcal{S}}}
     &= \set{
       \left( \bm{E}, \overline{ \bm{t} }^{\mathcal{S}} \right)_{ \bm{A}_{\mathcal{S}} }
       }{
@@ -393,34 +438,98 @@ We can find translations in $\mathcal{T}_{\bm{A}_{\mathcal{D}}}$ as
           \bm{m}_{i} = \bm{m}_{\sigma(i)}
         \end{array}
       }
-      \times \mathcal{T}_{\bm{A}_{\mathcal{S}}}.
+      \times \mathcal{T}_{\bm{A}_{\mathcal{D}}}.
 \end{align}
 Then, we take one of primitive basis vectors $\bm{A}_{\mathcal{D}}$ of with
 \begin{align}
-  \bm{A}
-    &= \bm{A}_{\mathcal{D}} \bm{V} \quad (\bm{V} \in \mathbb{Z}^{3 \times 3}) \\
-  \mathcal{T}_{\bm{A}_{\mathcal{D}}}
-    &= \bigsqcup_{ \overline{ \bm{t} }^{\mathcal{D}} }
-      \left( \bm{E}, \overline{ \bm{t} }^{\mathcal{D}} \right)_{ \bm{A}_{\mathcal{D}} }
-      \mathcal{T}_{\bm{A}}.
+  \bm{A}_{\mathcal{D}}
+    &= \bm{A}_{\mathcal{S}} \bm{V} \quad (\bm{V} \in \mathbb{Z}^{3 \times 3}).
 \end{align}
+
+\subsection{Spin translation group search}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \coordinate (Pso) at (0, 0);
+    \coordinate (PsoTAD) at (0, 2);
+    \coordinate (PsoTAS) at (0, 4);
+    \coordinate (Gst) at (2, 3);
+    \coordinate (mid) at (2, 5);
+    \coordinate (O3TAS) at (4, 6);
+
+    \node at (Pso) [left] {$\mathcal{P}_{\mathrm{so}}$};
+    \node at (PsoTAD) [left] {$\mathcal{P}_{\mathrm{so}} \times \mathcal{T}_{\bm{A}_{\mathcal{D}}}$};
+    \node at (PsoTAS) [left] {$\mathcal{P}_{\mathrm{so}} \times \mathcal{T}_{\bm{A}_{\mathcal{S}}}$};
+    \node at (Gst) [right] {$\mathcal{G}_{\mathrm{st}}$};
+    \node at (O3TAS) [above] {$\mathrm{O}(3) \times \mathcal{T}_{\bm{A}_{\mathcal{S}}}$};
+
+    \fill[black] (Pso) circle (2pt);
+    \fill[black] (PsoTAD) circle (2pt);
+    \fill[black] (PsoTAS) circle (2pt);
+    \fill[black] (Gst) circle (2pt);
+    \fill[black] (mid) circle (2pt);
+    \fill[black] (O3TAS) circle (2pt);
+
+    \draw (Pso) -- (PsoTAD);
+    \draw (PsoTAD) -- (PsoTAS);
+    \draw (PsoTAD) -- (Gst);
+    \draw (Gst) -- (mid);
+    \draw (PsoTAS) -- (mid);
+    \draw (mid) -- (O3TAS);
+  \end{tikzpicture}
+  \caption{\label{fig:spin_translation_group}Group-subgroup diagram of spin translation group.}
+\end{figure}
+
+For coset representatives $(\bm{E}, \bm{v}) \mathcal{T}_{\bm{A}_{\mathcal{D}}} \in \mathcal{T}_{\bm{A}_{\mathcal{S}}} / \mathcal{T}_{\bm{A}_{\mathcal{D}}}$, we search for $\bm{W}_{\bm{v}}$ by solving a Procrustes problem as shown in Appendix~\ref{appx:procrustes}.
+Number of generators for $\{ \bm{W}_{\bm{v}} \}$ can be determined from the Smith normal form of $\bm{V}$.
 
 \begin{align}
-  \mathcal{S}
-    &\neq \bigsqcup_{ \overline{\bm{R}}^{\mathcal{S}} } \bigsqcup_{ \overline{ \bm{t} }^{\mathcal{D}} }
-      \left(
-        \bm{V}^{-1} \overline{\bm{R}}^{\mathcal{S}} \bm{V},
-        \bm{V}^{-1} \overline{ \bm{v} }^{\mathcal{S}}(\overline{\bm{R}}^{\mathcal{S}})
-      \right)_{ \bm{A}_{\mathcal{D}} }
-      \left( \bm{E}, \overline{ \bm{t} }^{\mathcal{D}} \right)_{ \bm{A}_{\mathcal{D}} }
-      \mathcal{T}_{\bm{A}},
+  \mathcal{G}_{\mathrm{st}}
+    &=
+      \bigsqcup_{ \overline{\bm{v}}^{\mathcal{D}} }
+      \bigsqcup_{
+        (\bm{E}, \overline{\bm{t}}^{\mathcal{D}})_{\bm{A}_{\mathcal{D}}} \mathcal{T}_{\bm{A}}
+          \in \mathcal{T}_{\bm{A}_{\mathcal{D}}} / \mathcal{T}_{\bm{A}}
+      }
+        (\bm{W}_{ \overline{\bm{v}}^{\mathcal{D}} }, (\bm{E}, \overline{\bm{v}}^{\mathcal{D}})_{\bm{A}_{\mathcal{D}}})
+        (\bm{E}, \overline{\bm{t}}^{\mathcal{D}})_{\bm{A}_{\mathcal{D}}}
+        \left(
+          \mathcal{P}_{\mathrm{so}} \times \mathcal{T}_{\bm{A}}
+        \right)
 \end{align}
-
-For coset representatives $(\bm{E}, \bm{A}_{\mathcal{D}} \overline{ \bm{t} }^{\mathcal{D}})$, we search for $\bm{W}_{\bm{v}}$ by solving a Procrustes problem as shown in Appendix~\ref{appx:procrustes}.
 
 \subsection{Spin space group search}
 
+\begin{align}
+  \mathcal{P}_{\mathcal{D}}
+    &\coloneqq \set{
+        \bm{A}_{\mathcal{S}} \overline{\bm{R}}^{\mathcal{S}} \bm{A}_{\mathcal{S}}^{-1} \in \mathcal{P}(\mathcal{S})
+      }{
+        \bm{V}^{-1} \overline{\bm{R}}^{\mathcal{S}} \bm{V} \in \mathbb{Z}^{3 \times 3}
+      }
+\end{align}
 
+\begin{align}
+  \mathcal{S}_{\mathcal{D}}
+    &\coloneqq \bigsqcup_{
+          \overline{\bm{R}}^{\mathcal{S}} \in \bm{A}_{\mathcal{S}}^{-1} \mathcal{P}_{\mathcal{D}} \bm{A}_{\mathcal{S}}
+      } \bigsqcup_{
+          \left( \bm{E}, \overline{ \bm{t} }^{\mathcal{S}} \right)_{ \bm{A}_{\mathcal{S}} } \mathcal{T}_{\bm{A}_{\mathcal{D}}}
+          \in \mathcal{T}_{\bm{A}_{\mathcal{S}}} / \mathcal{T}_{\bm{A}_{\mathcal{D}}}
+      }
+      \left(
+        \overline{\bm{R}}^{\mathcal{S}},
+        \overline{ \bm{v} }^{\mathcal{S}}(\overline{\bm{R}}^{\mathcal{S}})
+      \right)_{ \bm{A}_{\mathcal{S}} }
+      \left( \bm{E}, \overline{ \bm{t} }^{\mathcal{S}} \right)_{ \bm{A}_{\mathcal{S}} }
+      \mathcal{T}_{\bm{A}_{\mathcal{D}}},
+\end{align}
+
+\begin{align}
+  \mathcal{G}
+    = \bigsqcup_{ \bm{R} \in \mathcal{P}(\mathcal{F}(\mathcal{G})) } (\bm{W}_{\bm{R}}, (\bm{R}, \bm{v}_{\bm{R}})) \mathcal{G}_{\mathrm{st}}
+\end{align}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Symmetrization of spin arrangement}
