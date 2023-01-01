@@ -6,7 +6,7 @@ import numpy as np
 from spglib import get_symmetry_dataset
 
 from spinspg.permutation import Permutation, get_symmetry_permutations
-from spinspg.spin_only import SpinOnlyGroup
+from spinspg.spin import SpinOnlyGroup
 from spinspg.utils import NDArrayFloat, NDArrayInt, ndarray2d_to_integer_tuple
 
 
@@ -28,6 +28,8 @@ class NonmagneticSymmetry:
     centerings: array, (nc, 3)
         Centering translations w.r.t. ``prim_lattice``
     centering_permutations: (nc, N)
+    transformation: array[int], (3, 3)
+        Transformation matrix from primitive to given cell
     """
 
     prim_lattice: NDArrayFloat
@@ -36,6 +38,7 @@ class NonmagneticSymmetry:
     prim_permutations: list[Permutation]
     prim_centerings: NDArrayFloat
     prim_centering_permutations: list[Permutation]
+    transformation: NDArrayInt
 
 
 def get_symmetry_with_cell(
@@ -107,6 +110,7 @@ def get_symmetry_with_cell(
         prim_permutations=prim_permutations,
         prim_centerings=np.array(prim_centerings),
         prim_centering_permutations=prim_centering_permutations,
+        transformation=np.around(tmat).astype(np.int_),
     )
 
 

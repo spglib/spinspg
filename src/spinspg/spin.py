@@ -81,3 +81,23 @@ def get_spin_only_group(magmoms: NDArrayFloat, mag_symprec: float) -> SpinOnlyGr
 
     # Non-coplanar
     return SpinOnlyGroup.noncoplanar()
+
+
+def solve_procrustes(A: NDArrayFloat, B: NDArrayFloat) -> NDArrayFloat:
+    """Solve orthogonal Procrustes problem.
+
+        argmin_{ R in O(3) } || R A^T - B^T ||_{F}
+
+    Parameters
+    ----------
+    A: array, (n, 3)
+    B: array, (n, 3)
+
+    Returns
+    -------
+    R: array, (3, 3)
+        orthogonal matrix
+    """
+    u, s, vt = np.linalg.svd(B.T @ A)
+    R = u @ vt
+    return R

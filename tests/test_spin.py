@@ -1,6 +1,6 @@
 import numpy as np
 
-from spinspg.spin_only import SpinOnlyGroupType, get_spin_only_group
+from spinspg.spin import SpinOnlyGroupType, get_spin_only_group, solve_procrustes
 
 
 def test_spin_only_group():
@@ -52,3 +52,28 @@ def test_spin_only_group():
     )
     so_noncoplanar = get_spin_only_group(magmoms_noncoplanar, mag_symprec)
     assert so_noncoplanar.spin_only_group_type == SpinOnlyGroupType.NONCOPLANAR
+
+
+def test_solve_procrustes():
+    A = np.array(
+        [
+            [1, 0, 0],
+            [1, 1, 0],
+            [1, 1, 1],
+            [0, 0, 1],
+        ]
+    )
+    # Random orthogonal matrix:
+    #   a = np.random.random((3, 3))
+    #   R = sp.linalg.polar(a)[0]
+    R = np.array(
+        [
+            [-0.03831202, 0.99710779, 0.06563723],
+            [0.28470653, -0.05207084, 0.95719947],
+            [0.95784883, 0.05535959, -0.28188816],
+        ]
+    )
+    B = A @ R.T
+
+    R_actual = solve_procrustes(A, B)
+    assert np.allclose(R_actual, R)
