@@ -36,6 +36,7 @@ dependencies = [
     "numpy>=1.20.1",
     "spglib>=2.0.2",
     "hsnf==0.3.15",  # Hermite normal form
+    "spgrep>=0.3.2",
 ]
 
 [project.urls]

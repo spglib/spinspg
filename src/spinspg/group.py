@@ -162,7 +162,7 @@ class SpinSpaceGroup:
     transformation: NDArrayInt
 
 
-def get_spin_space_group(
+def get_primitive_spin_symmetry(
     nonmagnetic_symmetry: NonmagneticSymmetry, magmoms: NDArrayFloat, mag_symprec: float
 ) -> SpinSpaceGroup:
     """Return spin space group symmetry.
@@ -200,6 +200,9 @@ def get_spin_space_group(
     tmatinv_stg = np.linalg.inv(tmat_stg)
     assert np.isclose(np.abs(np.linalg.det(tmat_stg)), len(stg_centerings))
 
+    # Spin only group
+    spin_only_group = get_spin_only_group(magmoms, mag_symprec)
+
     # Spin translation group search
     spin_translation_coset = []
     found_stg_centerings = set()
@@ -217,6 +220,10 @@ def get_spin_space_group(
         new_magmoms = magmoms.copy()
         perm_magmoms = magmoms[perm.permutation]
         W = solve_procrustes(new_magmoms, perm_magmoms)
+        if spin_only_group.contain(W):
+            # Chose W as identify if W belongs to the spin only group
+            W = np.eye(3, dtype=np.float_)
+
         new_magmoms = new_magmoms @ W.T
         if np.max(np.linalg.norm(new_magmoms - perm_magmoms, axis=1)) < mag_symprec:
             # w.r.t. primitive cell of spin space group
@@ -237,9 +244,6 @@ def get_spin_space_group(
         @ nonmagnetic_symmetry.transformation
     )
 
-    # Spin only group
-    spin_only_group = get_spin_only_group(magmoms, mag_symprec)
-
     # Spin space group search
     nontrivial_coset = []
     for rot, trans, perm in zip(
@@ -258,6 +262,10 @@ def get_spin_space_group(
             new_magmoms = magmoms.copy()
             perm_magmoms = magmoms[new_perm.permutation]
             W = solve_procrustes(new_magmoms, perm_magmoms)
+            if spin_only_group.contain(W):
+                # Chose W as identify if W belongs to the spin only group
+                W = np.eye(3, dtype=np.float_)
+
             new_magmoms = new_magmoms @ W.T
             if np.max(np.linalg.norm(new_magmoms - perm_magmoms, axis=1)) < mag_symprec:
                 # w.r.t. primitive cell of spin space group

@@ -1,12 +1,11 @@
 import numpy as np
+import pytest
 
 from spinspg.spin import SpinOnlyGroupType, get_spin_only_group, solve_procrustes
 
 
-def test_spin_only_group():
-    mag_symprec = 1e-5
-
-    # Nonmagnetic
+@pytest.fixture
+def nonmagnetic():
     magmoms_nonmagnetic = np.array(
         [
             [0, 0, 0],
@@ -14,10 +13,11 @@ def test_spin_only_group():
         ],
         dtype=np.float_,
     )
-    so_nonmagnetic = get_spin_only_group(magmoms_nonmagnetic, mag_symprec)
-    assert so_nonmagnetic.spin_only_group_type == SpinOnlyGroupType.NONMAGNETIC
+    return magmoms_nonmagnetic
 
-    # Collinear
+
+@pytest.fixture
+def collinear():
     magmoms_collinear = np.array(
         [
             [0, 0, 1],
@@ -25,23 +25,23 @@ def test_spin_only_group():
         ],
         dtype=np.float_,
     )
-    so_collinear = get_spin_only_group(magmoms_collinear, mag_symprec)
-    assert so_collinear.spin_only_group_type == SpinOnlyGroupType.COLLINEAR
-    assert np.allclose(np.cross(so_collinear.axis, np.array([0, 0, 1])), 0)
+    return magmoms_collinear
 
-    # Coplanar
-    magmoms_collinear = np.array(
+
+@pytest.fixture
+def coplanar():
+    magmoms_coplanar = np.array(
         [
             [0, 0, 1],
             [0, 1, 0],
         ],
         dtype=np.float_,
     )
-    so_coplanar = get_spin_only_group(magmoms_collinear, mag_symprec)
-    assert so_coplanar.spin_only_group_type == SpinOnlyGroupType.COPLANAR
-    assert np.allclose(np.cross(so_coplanar.axis, np.array([1, 0, 0])), 0)
+    return magmoms_coplanar
 
-    # Non-coplanar
+
+@pytest.fixture
+def noncoplanar():
     magmoms_noncoplanar = np.array(
         [
             [1, 0, 0],
@@ -50,8 +50,55 @@ def test_spin_only_group():
         ],
         dtype=np.float_,
     )
-    so_noncoplanar = get_spin_only_group(magmoms_noncoplanar, mag_symprec)
-    assert so_noncoplanar.spin_only_group_type == SpinOnlyGroupType.NONCOPLANAR
+    return magmoms_noncoplanar
+
+
+@pytest.mark.parametrize(
+    "magmoms_type,sog_type,axis",
+    [
+        ("nonmagnetic", SpinOnlyGroupType.NONMAGNETIC, None),
+        ("collinear", SpinOnlyGroupType.COLLINEAR, [0, 0, 1]),
+        ("coplanar", SpinOnlyGroupType.COPLANAR, [1, 0, 0]),
+        ("noncoplanar", SpinOnlyGroupType.NONCOPLANAR, None),
+    ],
+)
+def test_spin_only_group(request, magmoms_type, sog_type, axis):
+    magmoms = request.getfixturevalue(magmoms_type)
+    sog = get_spin_only_group(magmoms, mag_symprec=1e-5)
+    assert sog.spin_only_group_type == sog_type
+    if axis is not None:
+        assert np.allclose(np.cross(sog.axis, axis), 0)
+
+
+FOURFOLD_Z = [
+    [0, -1, 0],
+    [1, 0, 0],
+    [0, 0, 1],
+]
+MIRROR_X = [
+    [-1, 0, 0],
+    [0, 1, 0],
+    [0, 0, 1],
+]
+
+
+@pytest.mark.parametrize(
+    "magmoms_type,linear,expect",
+    [
+        ("nonmagnetic", FOURFOLD_Z, True),
+        ("nonmagnetic", MIRROR_X, True),
+        ("collinear", FOURFOLD_Z, True),
+        ("collinear", MIRROR_X, True),
+        ("coplanar", FOURFOLD_Z, False),
+        ("coplanar", MIRROR_X, True),
+        ("noncoplanar", FOURFOLD_Z, False),
+        ("noncoplanar", MIRROR_X, False),
+    ],
+)
+def test_contain(request, magmoms_type, linear, expect):
+    magmoms = request.getfixturevalue(magmoms_type)
+    sog = get_spin_only_group(magmoms, mag_symprec=1e-5)
+    assert sog.contain(linear) == expect
 
 
 def test_solve_procrustes():

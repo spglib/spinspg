@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 
 import numpy as np
+from spgrep.spinor import get_rotation_angle_and_axis
 
 from spinspg.utils import NDArrayFloat
 
@@ -28,6 +29,44 @@ class SpinOnlyGroup:
 
     spin_only_group_type: SpinOnlyGroupType
     axis: NDArrayFloat | None
+
+    def contain(self, linear: NDArrayFloat, atol: float = 1e-5) -> bool:
+        """Return if this spin only group contains ``linear``."""
+        if self.spin_only_group_type == SpinOnlyGroupType.NONMAGNETIC:
+            return True
+        if np.allclose(linear, np.eye(3), atol=atol):
+            # Group contains identity
+            return True
+
+        if np.linalg.det(linear) > 0:
+            sign = 1
+            rotation = np.array(linear).copy()
+        else:
+            sign = -1
+            rotation = -np.array(linear)
+
+        theta, axis = get_rotation_angle_and_axis(rotation)
+
+        is_parallel = (self.axis is not None) and np.allclose(
+            np.cross(axis, self.axis), 0, atol=atol
+        )
+        two_fold = np.isclose(theta, np.pi, atol=atol)
+        if self.spin_only_group_type == SpinOnlyGroupType.COPLANAR:
+            if (sign == -1) and is_parallel and two_fold:
+                # ``linear`` is a mirror along self.axis
+                return True
+            else:
+                return False
+        elif self.spin_only_group_type == SpinOnlyGroupType.COLLINEAR:
+            if (sign == 1) and is_parallel:
+                # ``linear`` is a rotation along self.axis
+                return True
+            elif (sign == -1) and np.isclose(np.inner(axis, self.axis), 0, atol=atol) and two_fold:
+                return True
+            else:
+                return False
+        else:
+            return False
 
     @classmethod
     def nonmagnetic(cls) -> SpinOnlyGroup:
