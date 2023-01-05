@@ -197,7 +197,7 @@ def get_primitive_spin_symmetry(
     )
     tmat_stg, _ = column_style_hermite_normal_form(stg_vectors)
     tmat_stg = tmat_stg[:, :3]  # (3, 3)
-    tmatinv_stg = np.linalg.inv(tmat_stg)
+    invtmat_stg = np.linalg.inv(tmat_stg)
     assert np.isclose(np.abs(np.linalg.det(tmat_stg)), len(stg_centerings))
 
     # Spin only group
@@ -209,7 +209,7 @@ def get_primitive_spin_symmetry(
     for centering, perm in zip(
         nonmagnetic_symmetry.prim_centerings, nonmagnetic_symmetry.prim_centering_permutations
     ):
-        reduced_centering = tmatinv_stg @ centering
+        reduced_centering = invtmat_stg @ centering
         reduced_centering -= np.rint(reduced_centering)
         reduced_centering = tuple(np.around(tmat_stg @ reduced_centering).astype(np.int_))
         if reduced_centering in found_stg_centerings:
@@ -230,19 +230,19 @@ def get_primitive_spin_symmetry(
             spin_translation_coset.append(
                 SpinSymmetryOperation(
                     rotation=np.eye(3, dtype=np.int_),
-                    translation=tmatinv_stg @ centering,
+                    translation=invtmat_stg @ centering,
                     spin_rotation=W,
                 )
             )
 
     # Transform centerings to primitive cell of spin space group
     prim_lattice = nonmagnetic_symmetry.prim_lattice @ tmat_stg
-    prim_centerings = [tmatinv_stg @ centering for centering in stg_centerings]
-    transformation = (
+    prim_centerings = [invtmat_stg @ centering for centering in stg_centerings]
+    transformation = np.around(
         np.linalg.inv(prim_lattice)
         @ nonmagnetic_symmetry.prim_lattice
         @ nonmagnetic_symmetry.transformation
-    )
+    ).astype(np.int_)
 
     # Spin space group search
     nontrivial_coset = []
@@ -252,7 +252,7 @@ def get_primitive_spin_symmetry(
         nonmagnetic_symmetry.prim_permutations,
     ):
         # Point group symmetry compatible with the primitive cell
-        rot_prim = tmatinv_stg @ rot @ tmat_stg
+        rot_prim = invtmat_stg @ rot @ tmat_stg
         if not is_integer_array(rot_prim):
             continue
 
@@ -273,7 +273,7 @@ def get_primitive_spin_symmetry(
                 nontrivial_coset.append(
                     SpinSymmetryOperation(
                         rotation=rot_prim,
-                        translation=tmatinv_stg @ new_trans,
+                        translation=invtmat_stg @ new_trans,
                         spin_rotation=W,
                     )
                 )

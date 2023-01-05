@@ -1,5 +1,6 @@
 import numpy as np
 
+from spinspg.core import get_spin_symmetry
 from spinspg.group import get_primitive_spin_symmetry, get_symmetry_with_cell
 from spinspg.spin import SpinOnlyGroupType
 
@@ -35,3 +36,147 @@ def test_spin_space_group_kagome(layer_triangular_kagome):
         if np.allclose(ops.spin_rotation, np.eye(3)):
             kernel_pointgroup.append(ops.rotation)
     assert len(kernel_pointgroup) == 4  # 2/m
+    assert len(ssg.nontrivial_coset) == 24  # 6/mmm
+
+
+def test_spin_space_group_rutile(rutile):
+    lattice, positions, numbers, magmoms = rutile
+    symprec = 1e-5
+    ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, -1)
+    ssg = get_primitive_spin_symmetry(ns, magmoms, symprec)
+
+    assert ssg.spin_only_group.spin_only_group_type == SpinOnlyGroupType.COLLINEAR
+    assert np.allclose(np.cross(ssg.spin_only_group.axis, [0, 0, 1]), 0)
+    assert len(ssg.spin_translation_coset) == 1
+    assert len(ssg.prim_centerings) == 1
+    assert np.isclose(np.linalg.det(ssg.transformation), 1)
+
+    kernel_pointgroup = []
+    for ops in ssg.nontrivial_coset:
+        if np.allclose(ops.spin_rotation, np.eye(3)):
+            kernel_pointgroup.append(ops.rotation)
+
+    assert len(ssg.nontrivial_coset) == 16  # 4/mmm
+    assert len(kernel_pointgroup) == 8  # 4/m
+
+
+def test_get_spin_symmetry(rutile):
+    lattice, positions, numbers, magmoms = rutile
+    sog, rotations, translations, spin_rotations = get_spin_symmetry(
+        lattice, positions, numbers, magmoms
+    )
+
+    assert sog.spin_only_group_type == SpinOnlyGroupType.COLLINEAR
+    assert np.allclose(np.cross(sog.axis, [0, 0, 1]), 0)  # parallel to [0, 0, 1]
+
+    identity = np.eye(3)
+    mz = np.diag([1, 1, -1])
+    expects = [
+        (
+            # (1) x, y, z; 1
+            [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+            [0, 0, 0],
+            identity,
+        ),
+        (
+            # (2) -x, -y, z; 1
+            [[-1, 0, 0], [0, -1, 0], [0, 0, 1]],
+            [0, 0, 0],
+            identity,
+        ),
+        (
+            # (3) -y + 1/2, x + 1/2, z + 1/2; mz
+            [[0, -1, 0], [1, 0, 0], [0, 0, 1]],
+            [0.5, 0.5, 0.5],
+            mz,
+        ),
+        (
+            # (4) y + 1/2, -x + 1/2, z + 1/2; mz
+            [[0, 1, 0], [-1, 0, 0], [0, 0, 1]],
+            [0.5, 0.5, 0.5],
+            mz,
+        ),
+        (
+            # (5) -x + 1/2, y + 1/2, -z + 1/2; mz
+            [[-1, 0, 0], [0, 1, 0], [0, 0, -1]],
+            [0.5, 0.5, 0.5],
+            mz,
+        ),
+        (
+            # (6) x + 1/2, -y + 1/2, -z + 1/2; mz
+            [[1, 0, 0], [0, -1, 0], [0, 0, -1]],
+            [0.5, 0.5, 0.5],
+            mz,
+        ),
+        (
+            # (7) y, x, -z; 1
+            [[0, 1, 0], [1, 0, 0], [0, 0, -1]],
+            [0, 0, 0],
+            identity,
+        ),
+        (
+            # (8) -y, -x, -z; 1
+            [[0, -1, 0], [-1, 0, 0], [0, 0, -1]],
+            [0, 0, 0],
+            identity,
+        ),
+        (
+            # (9) -x, -y, -z; 1
+            [[-1, 0, 0], [0, -1, 0], [0, 0, -1]],
+            [0, 0, 0],
+            identity,
+        ),
+        (
+            # (10) x, y, -z; 1
+            [[1, 0, 0], [0, 1, 0], [0, 0, -1]],
+            [0, 0, 0],
+            identity,
+        ),
+        (
+            # (11) y + 1/2, -x + 1/2, -z + 1/2; mz
+            [[0, 1, 0], [-1, 0, 0], [0, 0, -1]],
+            [0.5, 0.5, 0.5],
+            mz,
+        ),
+        (
+            # (12) -y + 1/2, x + 1/2, -z + 1/2; mz
+            [[0, -1, 0], [1, 0, 0], [0, 0, -1]],
+            [0.5, 0.5, 0.5],
+            mz,
+        ),
+        (
+            # (13) x + 1/2, -y + 1/2, z + 1/2; mz
+            [[1, 0, 0], [0, -1, 0], [0, 0, 1]],
+            [0.5, 0.5, 0.5],
+            mz,
+        ),
+        (
+            # (14) -x + 1/2, y + 1/2, z + 1/2; mz
+            [[-1, 0, 0], [0, 1, 0], [0, 0, 1]],
+            [0.5, 0.5, 0.5],
+            mz,
+        ),
+        (
+            # (15) -y, -x, z; 1
+            [[0, -1, 0], [-1, 0, 0], [0, 0, 1]],
+            [0, 0, 0],
+            identity,
+        ),
+        (
+            # (16) y, x, z; 1
+            [[0, 1, 0], [1, 0, 0], [0, 0, 1]],
+            [0, 0, 0],
+            identity,
+        ),
+    ]
+
+    found = [False for _ in expects]
+    assert len(rotations) == len(expects)
+    for rot, trans, srot in zip(rotations, translations, spin_rotations):
+        for i in range(len(expects)):
+            if (not found[i]) and np.allclose(rot, expects[i][0]):
+                assert np.allclose(trans, expects[i][1])
+                assert np.allclose(srot, expects[i][2])
+                found[i] = True
+
+    assert all(found)

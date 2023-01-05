@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture
 def fcc():
-    lattice = np.eye(3)
+    lattice = 4.1 * np.eye(3)
     positions = np.array(
         [
             [0, 0, 0],
@@ -28,6 +28,7 @@ def fcc():
 
 @pytest.fixture
 def layer_triangular_kagome():
+    # Example adapted from Sec. 4 of PhysRevX.12.021016
     # Kagome lattice with similar to the spin arrangement of the non-collinear antiferromagnetic Mn3Ge and Mn3Sn
     # Family space group: P6/mmm (No. 191)
     # Magnetic space group: Cmm'm'
@@ -103,4 +104,45 @@ def triangular_kagome():
             [-0.5 * m, -np.sqrt(3) / 2 * m, 0],  # Mn-C
         ]
     )
+    return lattice, positions, numbers, magmoms
+
+
+@pytest.fixture
+def rutile():
+    # Antiferromagnetic rutile structure
+    # Example adapted from Sec. 7.8 of Bradley and Cracknel
+    # MnF2(ferro): https://materialsproject.org/materials/mp-560902
+    # P4_2/mnm (No. 136)
+    a = 4.87
+    c = 3.31
+    x_4f = 0.695169
+    lattice = np.array(
+        [
+            [a, 0, 0],
+            [0, a, 0],
+            [0, 0, c],
+        ]
+    )
+    positions = np.array(
+        [
+            [0, 0, 0],  # Mn(2a)
+            [0.5, 0.5, 0.5],  # Mn(2a)
+            [x_4f, x_4f, 0],  # F(4f)
+            [-x_4f, -x_4f, 0],  # F(4f)
+            [-x_4f + 0.5, x_4f + 0.5, 0.5],  # F(4f)
+            [x_4f + 0.5, -x_4f + 0.5, 0.5],  # F(4f)
+        ]
+    )
+    numbers = np.array([0, 0, 1, 1, 1, 1])
+    magmoms = np.array(
+        [
+            [0, 0, 2.5],
+            [0, 0, -2.5],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+        ]
+    )
+
     return lattice, positions, numbers, magmoms
