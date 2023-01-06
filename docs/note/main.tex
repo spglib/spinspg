@@ -420,11 +420,15 @@ A spin-only group of a noncoplanar spin arrangement is $\mathcal{P}_{\mathrm{so}
 
 We write the primitive basis vectors of $\mathcal{T}(\mathcal{D})$ as $\bm{A}_{\mathcal{D}}$.
 First, we search for $\mathcal{T}(\mathcal{D}) = \mathcal{T}_{\bm{A}_{\mathcal{D}}} = \set{ (\bm{E}, \bm{v}) }{ (\bm{E}, (\bm{E}, \bm{v})) \in \mathcal{G} }$.
-Since $\mathcal{T}_{\bm{A}_{\mathcal{D}}}$ is a subgroup of $\mathcal{T}_{\bm{A}_{\mathcal{S}}}$, we only need to check finite coset representatives of $\mathcal{T}_{\bm{A}} / \mathcal{T}_{\bm{A}_{\mathcal{S}}}$.
+The group-subgroup relationships of translation subgroups are shown in Fig.~\ref{fig:translation_subgroup}.
 The two basis vectors $\bm{A}$ and $\bm{A}_{\mathcal{S}}$ are related by an integer matrix as
 \begin{align}
   \bm{A} = \bm{A}_{\mathcal{S}} \bm{U} \quad (\bm{U} \in \mathbb{Z}^{3 \times 3}).
 \end{align}
+Since $\mathcal{T}_{\bm{A}_{\mathcal{D}}}$ is a subgroup of $\mathcal{T}_{\bm{A}_{\mathcal{S}}}$, we only need to check finite coset representatives of $\mathcal{T}_{\bm{A}} / \mathcal{T}_{\bm{A}_{\mathcal{S}}}$ \footnote{
+  The transformation matrix $\bm{U}$ can be calculated from centerings in $\mathcal{T}_{\bm{A}_{\mathcal{D}}} / \mathcal{T}_{\bm{A}_{\mathcal{S}}}$ and basis vectors of $\bm{A}_{\mathcal{S}}$.
+  Primitive basis vectors of $\mathcal{T}_{\bm{A}_{\mathcal{D}}}$ can be taken from three nonzero vectors from the Hermite normal from of a matrix formed by these centerings and basis vectors of $\bm{A}_{\mathcal{S}}$.
+}.
 We can find translations in $\mathcal{T}_{\bm{A}_{\mathcal{D}}}$ as
 \begin{align}
   \mathcal{T}_{\bm{A}_{\mathcal{S}}}
@@ -482,7 +486,8 @@ Then, we take one of primitive basis vectors $\bm{A}_{\mathcal{D}}$ of with
 \end{figure}
 
 For coset representatives $(\bm{E}, \bm{v}) \mathcal{T}_{\bm{A}_{\mathcal{D}}} \in \mathcal{T}_{\bm{A}_{\mathcal{S}}} / \mathcal{T}_{\bm{A}_{\mathcal{D}}}$, we search for $\bm{W}_{\bm{v}}$ by solving a Procrustes problem as shown in Appendix~\ref{appx:procrustes}.
-Number of generators for $\{ \bm{W}_{\bm{v}} \}$ can be determined from the Smith normal form of $\bm{V}$.
+% Number of generators for $\{ \bm{W}_{\bm{v}} \}$ can be determined from the Smith normal form of $\bm{V}$.
+The group-subgroup relationships for the spin translation group $\mathcal{G}_{\mathrm{st}}$ are shown in Fig.~\ref{fig:spin_translation_group}.
 
 \begin{align}
   \mathcal{G}_{\mathrm{st}}
@@ -500,6 +505,9 @@ Number of generators for $\{ \bm{W}_{\bm{v}} \}$ can be determined from the Smit
 \end{align}
 
 \subsection{Spin space group search}
+
+Some rotations in $\mathcal{P}(\mathcal{S})$ may not be compatible with $\mathcal{T}_{\bm{A}_{\mathcal{D}}}$.
+We write the subgroup of $\mathcal{S}$ which is compatible with $\mathcal{T}_{\bm{A}_{\mathcal{D}}}$ as $\mathcal{S}_{\mathcal{D}}$ and its point group as $\mathcal{P}_{\mathcal{D}}$.
 
 \begin{align}
   \mathcal{P}_{\mathcal{D}}
@@ -526,6 +534,9 @@ Number of generators for $\{ \bm{W}_{\bm{v}} \}$ can be determined from the Smit
       \mathcal{T}_{\bm{A}_{\mathcal{D}}},
 \end{align}
 
+Finally, the coset decomposition of $\mathcal{G}$ by $\mathcal{G}_{\mathrm{st}}$ is finite.
+The rotation parts of the coset representatives should belong to the point group of $\mathcal{F}(\mathcal{G})$.
+The corresponding spin-rotation parts are determined by solving the Procrustes problem as well.
 \begin{align}
   \mathcal{G}
     = \bigsqcup_{ \bm{R} \in \mathcal{P}(\mathcal{F}(\mathcal{G})) } (\bm{W}_{\bm{R}}, (\bm{R}, \bm{v}_{\bm{R}})) \mathcal{G}_{\mathrm{st}}
