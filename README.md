@@ -3,6 +3,12 @@ Python package for detecting spin space group on top of spglib
 
 - GitHub: <https://github.com/spglib/spinspg>
 
+## Features
+
+- Find spin symmetry operations from spin arrangements
+
+## Usage
+
 ## Installation
 
 ```shell

@@ -1,3 +1,4 @@
+"""Group for spin symmetry operations."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -18,7 +19,7 @@ from spinspg.utils import (
 
 @dataclass
 class NonmagneticSymmetry:
-    """Crystal structure with symmetry operations
+    """Crystal structure with symmetry operations.
 
     Attributes
     ----------
@@ -54,6 +55,7 @@ def get_symmetry_with_cell(
     symprec: float,
     angle_tolerance: float,
 ) -> NonmagneticSymmetry:
+    """Find spatial symmetry operations from nonmagnetic crystal structure."""
     dataset = get_symmetry_dataset((lattice, positions, numbers), symprec, angle_tolerance)
     rotations = dataset["rotations"]
     translations = dataset["translations"]

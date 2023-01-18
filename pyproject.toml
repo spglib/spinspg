@@ -7,7 +7,8 @@ build-backend = "setuptools.build_meta"
 ###############################################################################
 [project]
 name = "spinspg"
-dynamic = ["version", "readme"]
+dynamic = ["version"]
+readme = "README.md"
 description = "Python package for detecting spin space group on top of spglib"
 authors = [
     {name = "Kohei Shinohara", email = "kshinohara0508@gmail.com"},
@@ -40,7 +41,8 @@ dependencies = [
 ]
 
 [project.urls]
-Sources = "https://github.com/spglib/spinspg"
+homepage = "https://github.com/spglib/spinspg"
+repository = "https://github.com/spglib/spinspg"
 
 [project.optional-dependencies]
 dev = [
@@ -51,6 +53,7 @@ dev = [
     "flake8",
     "pyupgrade",
     "pydocstyle",
+    "toml",
 ]
 docs = [
     "sphinx",
@@ -64,8 +67,6 @@ docs = [
 ###############################################################################
 # Setuptools
 ###############################################################################
-[tool.setuptools.dynamic]
-readme = {file = "README.md"}
 
 [tool.setuptools]
 zip-safe = false

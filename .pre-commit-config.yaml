@@ -47,13 +47,13 @@ repos:
       - id: pyupgrade
   # Docstring
   - repo: https://github.com/pycqa/pydocstyle
-    rev: 6.1.1
+    rev: 6.3.0
     hooks:
     - id: pydocstyle
       additional_dependencies: ["toml"]
-      files: ^src/spgrep/
+      files: ^src/spinspg/
   # Notebook
   - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.6.0
+    rev: 1.6.1
     hooks:
       - id: nbqa-black

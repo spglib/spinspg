@@ -1,3 +1,4 @@
+"""Spin rotation for magnetic moments."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -10,6 +11,8 @@ from spinspg.utils import NDArrayFloat
 
 
 class SpinOnlyGroupType(Enum):
+    """Type of spin only group."""
+
     NONMAGNETIC = auto()  # O(3)
     COLLINEAR = auto()  # inf/m
     COPLANAR = auto()  # m
@@ -70,18 +73,22 @@ class SpinOnlyGroup:
 
     @classmethod
     def nonmagnetic(cls) -> SpinOnlyGroup:
+        """Return nonmagnetic spin-only group."""
         return SpinOnlyGroup(SpinOnlyGroupType.NONMAGNETIC, None)
 
     @classmethod
     def collinear(cls, axis: NDArrayFloat) -> SpinOnlyGroup:
+        """Return collinear spin-only group with the parallel axis."""
         return SpinOnlyGroup(SpinOnlyGroupType.COLLINEAR, axis)
 
     @classmethod
     def coplanar(cls, axis: NDArrayFloat) -> SpinOnlyGroup:
+        """Return coplanar spin-only group with the perpendicular axis."""
         return SpinOnlyGroup(SpinOnlyGroupType.COPLANAR, axis)
 
     @classmethod
     def noncoplanar(cls) -> SpinOnlyGroup:
+        """Return noncoplanar spin-only group."""
         return SpinOnlyGroup(SpinOnlyGroupType.NONCOPLANAR, None)
 
 
