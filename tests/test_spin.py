@@ -69,6 +69,9 @@ def test_spin_only_group(request, magmoms_type, sog_type, axis):
     if axis is not None:
         assert np.allclose(np.cross(sog.axis, axis), 0)
 
+    # Test __str__
+    assert str(sog)
+
 
 FOURFOLD_Z = [
     [0, -1, 0],

@@ -18,6 +18,10 @@ class SpinOnlyGroupType(Enum):
     COPLANAR = auto()  # m
     NONCOPLANAR = auto()  # 1
 
+    def __str__(self) -> str:
+        """Return string representation."""
+        return self.name
+
 
 @dataclass
 class SpinOnlyGroup:
@@ -32,6 +36,13 @@ class SpinOnlyGroup:
 
     spin_only_group_type: SpinOnlyGroupType
     axis: NDArrayFloat | None
+
+    def __str__(self) -> str:
+        """Return string representation."""
+        if self.spin_only_group_type in [SpinOnlyGroupType.COLLINEAR, SpinOnlyGroupType.COPLANAR]:
+            return str(self.spin_only_group_type) + f"(axis={self.axis})"
+        else:
+            return str(self.spin_only_group_type)
 
     def contain(self, linear: NDArrayFloat, atol: float = 1e-5) -> bool:
         """Return if this spin only group contains ``linear``."""
