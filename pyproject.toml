@@ -58,10 +58,10 @@ dev = [
 docs = [
     "sphinx",
     "sphinx-autobuild",
-    "sphinxcontrib-bibtex",
     "myst-parser",
     "sphinx-book-theme",
     "linkify-it-py",
+    "enum-tools[sphinx]",
 ]
 
 ###############################################################################

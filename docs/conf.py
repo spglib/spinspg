@@ -41,8 +41,8 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.mathjax",
     "sphinx.ext.intersphinx",
-    "sphinxcontrib.bibtex",
     "myst_parser",
+    "enum_tools.autoenum",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -64,9 +64,6 @@ autodoc_type_aliases = {}
 # napoleon_type_aliases = {}
 napoleon_use_rtype = True
 napoleon_use_ivar = True
-
-# https://pypi.org/project/sphinxcontrib-bibtex/
-bibtex_bibfiles = ["references.bib"]
 
 intersphinx_mapping = {
     "spglib": ("https://spglib.github.io/spglib/", None),

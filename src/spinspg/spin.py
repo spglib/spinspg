@@ -29,7 +29,8 @@ class SpinOnlyGroup:
 
     Attributes
     ----------
-    spin_only_group_type: Nonmagnetic, collinear, coplanar, or non-coplanar
+    spin_only_group_type: :class:`spin.SpinOnlyGroupType`
+        Nonmagnetic, collinear, coplanar, or non-coplanar
     axis: array or None, (3, )
         For collinear and coplanar, unit vector perpendicular to its rotation axis.
     """
