@@ -35,7 +35,7 @@ def test_spin_point_group_table():
             for symbol_B, datum_R_r_B in datum_R_r.items():
                 B = get_pointgroup_representative(symbol_B)
                 for number, mapping in datum_R_r_B:
-                    # print(f"#{number}: R={symbol_R}, r={symbol_r}, B={symbol_B}")
+                    print(f"#{number}: R={symbol_R}, r={symbol_r}, B={symbol_B}")
                     spg_generators = [(B[idx], generator_R[i]) for i, idx in enumerate(mapping)]
                     spg = traverse_spin_operations(spg_generators)
 
