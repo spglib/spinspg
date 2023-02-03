@@ -8,7 +8,8 @@ from spglib import get_pointgroup
 from spgrep.pointgroup import pg_dataset
 from spgrep.utils import ndarray2d_to_integer_tuple
 
-from spinspg.utils import NDArrayInt
+from spinspg.permutation import Permutation
+from spinspg.utils import NDArrayFloat, NDArrayInt
 
 # Representatives for a geometric crystal class. The first descriptions are chosen for "-42m", "32", "3m", "-3m" and "-6m2".
 # Choose unique axis c for "mm2".
@@ -1333,7 +1334,7 @@ SPIN_POINT_GROUP_TYPES = {
 }
 
 
-def get_pointgroup_representative(
+def get_pointgroup_representative_from_symbol(
     symbol: str,
 ):
     """Return a representative of a given geometric crystal class.
@@ -1351,29 +1352,106 @@ def get_pointgroup_representative(
     return group
 
 
-# TODO
-def get_canonical_pointgroup(prim_rotations: NDArrayInt):
-    """Return representative of geometric crystal class."""
-    # P^-1 @ prim_rotations @ P = canonical
-    pg_symbol, _, P = get_pointgroup(prim_rotations)
-    Pinv = np.linalg.inv(P)
+def get_pointgroup_representative(
+    prim_rotations: NDArrayInt | NDArrayFloat,
+) -> tuple[str, NDArrayFloat, list[int]]:
+    """Return representative of crystallographic point group.
 
-    # Match given crystallographic point group with standardized ones in primitive basis.
-    order = len(prim_rotations)
-    for idx, std_rotations in enumerate(pg_dataset[pg_symbol]):
-        matched = [ndarray2d_to_integer_tuple(Pinv @ r @ P) for r in prim_rotations]
+    Parameters
+    ----------
+    prim_rotations: array, (order, 3, 3)
 
-        success = True
-        mapping = [-1 for _ in range(order)]  # s.t. prim_rotations[mapping[i]] == std_rotations[i]
-        for i, ri in enumerate(std_rotations):
-            try:
-                j = matched.index(ri)  # type: ignore
-            except ValueError:
-                success = False
-                break
-            mapping[i] = j
-        if success:
-            return pg_symbol, idx, mapping
+    Returns
+    -------
+    symbol: str
+        Point group type
+    P: array, (3, 3)
+        transformation matrix.
+        Let `std_rotations` be a representative of a crystallographic point group.
+        The transformation `P` and mapping `mapping` satisfy `np.linalg.inv(P) @ prim_rotations[mapping[i]] @ P == std_rotations[i]`
+    mapping: list[int]
+    """
+    # P0^-1 @ prim_rotations @ P0 = matched
+    symbol, _, P0 = get_pointgroup(prim_rotations)
+    P0inv = np.linalg.inv(P0)
+
+    def _match(symbol, matched):
+        """Match given crystallographic point group with standardized ones in primitive basis."""
+        order = len(matched)
+        for idx, std_rotations in enumerate(pg_dataset[symbol]):
+            success = True
+            mapping = [-1 for _ in range(order)]  # s.t. matched[mapping[i]] == std_rotations[i]
+            for i, ri in enumerate(std_rotations):
+                try:
+                    j = matched.index(ri)  # type: ignore
+                except ValueError:
+                    success = False
+                    break
+                mapping[i] = j
+            if success:
+                return idx, mapping
+
+    matched = [ndarray2d_to_integer_tuple(P0inv @ r @ P0) for r in prim_rotations]
+    idx, mapping = _match(symbol, matched)
+
+    # spglib.get_pointgroup does not return a transformation matrix to a unique matrix group
+    # for mm2, -42m, 32, 3m, -3m, and -6m2.
+    # See https://github.com/spglib/spglib/issues/164
+    std_idx = POINT_GROUP_REPRESENTATIVES[symbol]
+    if idx == std_idx:
+        return symbol, P0, mapping
+
+    if symbol == "mm2":
+        # 90-degree rotation in orthorhombic
+        if idx == 0:
+            # unique axis a: bca -> abc
+            P1 = np.array(
+                [
+                    [0, 0, 1],
+                    [1, 0, 0],
+                    [0, 1, 0],
+                ]
+            )
+        elif idx == 1:
+            # unique axis b: a-cb -> abc
+            P1 = np.array(
+                [
+                    [1, 0, 0],
+                    [0, 0, -1],
+                    [0, 1, 0],
+                ]
+            )
+        else:
+            ValueError("Unreachable here!")
+    elif symbol == "-42m":
+        # 45-degree rotation in tetragonal
+        P1 = np.array(
+            [
+                [1 / np.sqrt(2), 1 / np.sqrt(2), 0],
+                [-1 / np.sqrt(2), 1 / np.sqrt(2), 0],
+                [0, 0, 1],
+            ]
+        )
+        # Indices of two-fold rotations and mirrors are interchanged in -42m and -4m2
+        perm = Permutation(mapping) * Permutation([0, 1, 2, 3, 6, 7, 5, 4])
+        mapping = perm.permutation
+    elif symbol in ["32", "3m", "-3m", "-6m2"]:
+        # 90 degree rotation in rhombohedral (hexagonal axis) and hexagonal
+        P1 = np.array(
+            [
+                [1 / np.sqrt(3), -2 / np.sqrt(3), 0],
+                [2 / np.sqrt(3), -1 / np.sqrt(3), 0],
+                [0, 0, 1],
+            ]
+        )
+        if symbol == "-6m2":
+            # Indices of two-fold rotations and mirrors are interchanged in -6m2 and -62m
+            perm = Permutation(mapping) * Permutation([0, 1, 2, 3, 4, 5, 9, 10, 11, 6, 7, 8])
+            mapping = perm.permutation
+    else:
+        raise ValueError("Unknown point group representative.")
+
+    return symbol, P0 @ P1, mapping
 
 
 def traverse_spin_operations(generators):
