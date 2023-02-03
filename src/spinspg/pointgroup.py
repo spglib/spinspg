@@ -1336,7 +1336,7 @@ SPIN_POINT_GROUP_TYPES = {
 
 def get_pointgroup_representative_from_symbol(
     symbol: str,
-):
+) -> list[tuple[tuple[int, ...], ...]]:
     """Return a representative of a given geometric crystal class.
 
     Parameters
