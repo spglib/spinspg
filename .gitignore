@@ -149,3 +149,6 @@ dmypy.json
 
 docs_build/
 .vscode/
+
+# Temporal file
+spin_point_group_table.tex
