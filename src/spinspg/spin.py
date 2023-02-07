@@ -124,7 +124,7 @@ def get_spin_only_group(magmoms: NDArrayFloat, mag_symprec: float) -> SpinOnlyGr
     _, eigvecs = np.linalg.eigh(moment)  # eigenvalues in ascending order
 
     # Collinear
-    parallel_axis = eigvecs[-1, :] / np.linalg.norm(eigvecs[-1, :])
+    parallel_axis = eigvecs[:, -1] / np.linalg.norm(eigvecs[:, -1])
     residual_collinear = (
         magmoms - (magmoms @ parallel_axis)[:, None] * parallel_axis[None, :]
     )  # (N, 3)
@@ -132,7 +132,7 @@ def get_spin_only_group(magmoms: NDArrayFloat, mag_symprec: float) -> SpinOnlyGr
         return SpinOnlyGroup.collinear(parallel_axis)
 
     # Coplanar
-    vertical_axis = eigvecs[0, :] / np.linalg.norm(eigvecs[0, :])
+    vertical_axis = eigvecs[:, 0] / np.linalg.norm(eigvecs[:, 0])
     residual_coplanar = (magmoms @ vertical_axis)[:, None] * vertical_axis[None, :]  # (N, 3)
     if np.max(2 * np.linalg.norm(residual_coplanar, axis=1)) < mag_symprec:
         return SpinOnlyGroup.coplanar(vertical_axis)

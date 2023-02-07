@@ -186,7 +186,8 @@ def get_primitive_spin_symmetry(
         nonmagnetic_symmetry.prim_centerings, nonmagnetic_symmetry.prim_centering_permutations
     ):
         if np.max(np.linalg.norm(magmoms[perm.permutation] - magmoms, axis=1)) < mag_symprec:
-            stg_centerings.append(centering)
+            assert is_integer_array(centering)
+            stg_centerings.append(np.around(centering).astype(int))
             stg_centering_permutations.append(perm)
 
     # Transformation matrix to primitive cell of maximal space subgroup
@@ -200,7 +201,7 @@ def get_primitive_spin_symmetry(
     tmat_stg, _ = column_style_hermite_normal_form(stg_vectors)
     tmat_stg = tmat_stg[:, :3]  # (3, 3)
     invtmat_stg = np.linalg.inv(tmat_stg)
-    assert np.isclose(np.abs(np.linalg.det(tmat_stg)), len(stg_centerings))
+    assert len(stg_centerings) % np.around(np.abs(np.linalg.det(tmat_stg))) == 0
 
     # Spin only group
     spin_only_group = get_spin_only_group(magmoms, mag_symprec)

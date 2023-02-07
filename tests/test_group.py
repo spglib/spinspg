@@ -60,6 +60,14 @@ def test_spin_space_group_rutile(rutile):
     assert len(kernel_pointgroup) == 8  # 4/m
 
 
+def test_spin_space_group_Cr2O3(Cr_in_Cr2O3):
+    lattice, positions, numbers, magmoms = Cr_in_Cr2O3
+    symprec = 1e-5
+    ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, -1)
+    ssg = get_primitive_spin_symmetry(ns, magmoms, symprec)  # noqa: F841
+    assert ssg.spin_only_group.spin_only_group_type == SpinOnlyGroupType.COLLINEAR
+
+
 def test_get_spin_symmetry(rutile):
     lattice, positions, numbers, magmoms = rutile
     sog, rotations, translations, spin_rotations = get_spin_symmetry(
