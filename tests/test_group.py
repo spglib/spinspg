@@ -1,4 +1,5 @@
 import numpy as np
+from spglib import get_magnetic_symmetry
 
 from spinspg.core import get_spin_symmetry
 from spinspg.group import get_primitive_spin_symmetry, get_symmetry_with_cell
@@ -74,8 +75,17 @@ def test_spin_space_group_PrScSb(Pr_in_PrScSb):
     symprec = 1e-5
     ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, -1)
     ssg = get_primitive_spin_symmetry(ns, magmoms, symprec)  # noqa: F841
+    num_sym = (
+        len(ssg.nontrivial_coset)
+        * len(ssg.spin_translation_coset)
+        * np.around(np.abs(np.linalg.det(ssg.transformation))).astype(int)
+    )
     assert ssg.spin_only_group.spin_only_group_type == SpinOnlyGroupType.COLLINEAR
     assert np.allclose(np.cross(ssg.spin_only_group.axis, [0, 0, 1]), 0)
+
+    mag_symmetry = get_magnetic_symmetry((lattice, positions, numbers, magmoms), symprec=symprec)
+    assert num_sym >= len(mag_symmetry["rotations"])
+    assert num_sym % len(mag_symmetry["rotations"]) == 0
 
 
 def test_get_spin_symmetry(rutile):
