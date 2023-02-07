@@ -66,6 +66,16 @@ def test_spin_space_group_Cr2O3(Cr_in_Cr2O3):
     ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, -1)
     ssg = get_primitive_spin_symmetry(ns, magmoms, symprec)  # noqa: F841
     assert ssg.spin_only_group.spin_only_group_type == SpinOnlyGroupType.COLLINEAR
+    assert np.allclose(np.cross(ssg.spin_only_group.axis, [1, 0, 0]), 0)
+
+
+def test_spin_space_group_PrScSb(Pr_in_PrScSb):
+    lattice, positions, numbers, magmoms = Pr_in_PrScSb
+    symprec = 1e-5
+    ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, -1)
+    ssg = get_primitive_spin_symmetry(ns, magmoms, symprec)  # noqa: F841
+    assert ssg.spin_only_group.spin_only_group_type == SpinOnlyGroupType.COLLINEAR
+    assert np.allclose(np.cross(ssg.spin_only_group.axis, [0, 0, 1]), 0)
 
 
 def test_get_spin_symmetry(rutile):

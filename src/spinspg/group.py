@@ -201,7 +201,6 @@ def get_primitive_spin_symmetry(
     tmat_stg, _ = column_style_hermite_normal_form(stg_vectors)
     tmat_stg = tmat_stg[:, :3]  # (3, 3)
     invtmat_stg = np.linalg.inv(tmat_stg)
-    assert len(stg_centerings) % np.around(np.abs(np.linalg.det(tmat_stg))) == 0
 
     # Spin only group
     spin_only_group = get_spin_only_group(magmoms, mag_symprec)
