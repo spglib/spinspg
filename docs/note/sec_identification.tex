@@ -1,0 +1,110 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Identification of nontrivial spin point group type}
+
+It is useful to define the following point groups derived from a nontrivial spin point group $\mathcal{U}_{\mathrm{np}}$.
+A \term{family point group} of $\mathcal{U}_{\mathrm{np}}$ is defined as
+\begin{align}
+  \mathcal{R}(\mathcal{U}_{\mathrm{np}})
+    &\coloneqq \set{ \bm{R}_{i} }{ (\bm{R}_{i}, \bm{W}_{i}) \in \mathcal{U}_{\mathrm{np}} }.
+\end{align}
+A \term{maximal point subgroup} of $\mathcal{U}_{\mathrm{np}}$ is defined as
+\begin{align}
+  \mathcal{K}(\mathcal{U}_{\mathrm{np}})
+    &\coloneqq \set{ \bm{R}_{i} }{ (\bm{R}_{i}, \bm{E}) \in \mathcal{U}_{\mathrm{np}} }.
+\end{align}
+A \term{family spin point group} of $\mathcal{U}_{\mathrm{np}}$ is defined as
+\begin{align}
+  \mathcal{B}(\mathcal{U}_{\mathrm{np}})
+    &\coloneqq \set{ \bm{W}_{i} }{ (\bm{R}_{i}, \bm{W}_{i}) \in \mathcal{U}_{\mathrm{np}} }.
+\end{align}
+As discussed in Sec.~\ref{sec:family_spin_point_group}, $\bm{W}_{i}$ can be chosen to form a group in $\mathrm{O}(3)$.
+
+\subsection{Nontrivial spin point group type}
+
+Two nontrivial spin point groups, $\mathcal{U}_{\mathrm{np}} = \{ (\bm{R}_{i}, \bm{W}_{i}) \}_{i=1}^{n}$ and $\mathcal{U}_{\mathrm{np}}'= \{ (\bm{R}_{i}', \bm{W}_{i}') \}_{i=1}^{n}$ belong to the same \term{spin point group type} if there exist transformation matrices $\bm{P}, \bm{Q} \in \mathrm{SL}(3, \mathbb{R})$ such that
+\begin{align}
+  \mathcal{U}_{\mathrm{np}}'
+    = \{ (\bm{P}^{-1} \bm{R}_{i} \bm{P}, \bm{Q}^{-1} \bm{W}_{i} \bm{Q}) \}_{i=1}^{n}
+    =: (\bm{P}, \bm{Q})^{-1} \mathcal{U}_{\mathrm{np}} (\bm{P}, \bm{Q}).
+\end{align}
+
+Representatives of 598 nontrivial spin point groups are tabulated in Ref.~\cite{Litvin:a14103}.
+For a given nontrivial spin point group $\mathcal{U}_{\mathrm{np}}$, we write a corresponding representative with the same spin point group type as $\mathcal{U}_{\mathrm{np}}^{\mathrm{std}} = \{ (\bm{R}_{i}^{\mathrm{std}}, \bm{W}_{i}^{\mathrm{std}}) \}_{i=1}^{n}$.
+
+The derived point groups $\mathcal{R}(\mathcal{U}_{\mathrm{np}})$ and $\mathcal{B}(\mathcal{U}_{\mathrm{np}})$ can be transformed into one of 32 representatives of geometric crystal classes.
+First, we search for transformation matrices, $\bm{P}$ and $\bm{Q}_{0}$, such that
+\begin{align}
+  \bm{P}^{-1} \mathcal{R}(\mathcal{U}_{\mathrm{np}}) \bm{P} &= \mathcal{R}(\mathcal{U}_{\mathrm{np}}^{\mathrm{std}}) \\
+  \bm{Q}_{0}^{-1} \mathcal{B}(\mathcal{U}_{\mathrm{np}}) \bm{Q}_{0} &= \mathcal{B}(\mathcal{U}_{\mathrm{np}}^{\mathrm{std}}).
+\end{align}
+The transformation $(\bm{P}, \bm{Q}_{0})$ gives
+\begin{align}
+  \label{eq:initial_transformed_np}
+  (\bm{P}, \bm{Q}_{0})^{-1} \mathcal{U}_{\mathrm{np}} (\bm{P}, \bm{Q}_{0})
+    = \{ (\bm{R}_{i}^{\mathrm{std}}, \bm{W}_{\tau(i)}^{\mathrm{std}}) \}_{i=1}^{n},
+\end{align}
+where $\tau \in \mathfrak{S}_{n}$ is a permutation induced by $\bm{P}$ and $\bm{Q}_{0}$ \footnote{
+  Note that permutation $\tau$ is not unique when $\mathcal{K}(\mathcal{U}_{\mathrm{np}})$ is not identity.
+  However, we can choose any of the corresponding permutations for the later step.
+}.
+
+We consider an automorphism group of $\mathcal{B}(\mathcal{U}_{\mathrm{np}}^{\mathrm{std}})$ to transform the nontrivial spin point group in Eq.~\eqref{eq:initial_transformed_np} to $\mathcal{B}(\mathcal{U}_{\mathrm{np}}^{\mathrm{std}})$.
+The automorphism group of a point group $\mathcal{P} = \{ \bm{R}_{i} \}_{i=1}^{n}$ is a permutation group induced by its affine normalizer \cite{Gubler1982},
+\begin{align}
+  \mathrm{Aut}(\mathcal{P})
+    \coloneqq \set {\tau \in \mathfrak{S}_{n} }{ \exists \bm{Q} \in \mathcal{N}_{\mathrm{A}(3)}(\mathcal{P}), \bm{Q}^{-1}\bm{R}_{i}\bm{Q} = \bm{R}_{\tau(i)} \, (\forall i) }.
+\end{align}
+The automorphism group is isomorphic to a factor group of $\mathcal{N}_{\mathrm{A}(3)}(\mathcal{P}) / \mathcal{C}_{\mathrm{A}(3)}(\mathcal{P})$, where $\mathcal{C}_{\mathrm{A}(3)}(\mathcal{P})$ is a centralizer of $\mathcal{P}$,
+\begin{align}
+  \mathcal{C}_{\mathrm{A}(3)}(\mathcal{P})
+    &\coloneqq \set{ \bm{Q} \in \mathrm{A}(3) }{ \bm{Q}^{-1} \bm{R}_{i} \bm{Q} = \bm{R}_{i} \, (\forall i) }.
+\end{align}
+The automorphism groups for crystallographic point groups are tabulated in Table~\ref{tab:normalizer_centralizer_pg}, which is based on Table 3.5.4.2 of Ref.~\cite{koch2016normalizers}.
+
+\begin{table}[tb]
+  \centering
+  \caption{Normalizers and centralizers of crystallographic point groups}
+  \label{tab:normalizer_centralizer_pg}
+  \begin{tabular}{cccc}
+    \hline \hline
+    Point groups $\mathcal{P}$
+      & $\mathcal{N}_{\mathrm{A}(3)}(\mathcal{P})$
+      & $\mathcal{C}_{\mathrm{A}(3)}(\mathcal{P})$
+      & $ | \mathrm{Aut}(\mathcal{P}) | $ \\
+    \hline
+    $1$, $\overline{1}$ & $\infty\infty m$ & $\infty\infty m$ & $1$ \\
+    $2$, $m$, $2/m$, $4$, $\overline{4}$, $4/m$, $3$, $\overline{3}$, $6$, $\overline{6}$, $6/m$
+      & $\infty / m m$ & $\infty / m m$ & $1$ \\
+    $222$, $mmm$ & $m\overline{3}m$ & $mmm$ & 6 \\
+    $mm2$ & $4/mmm$ & $mmm$ & 2 \\ % \{ 1, 4^{+} \}
+    $\overline{4}2m$ & $4/mmm$ & $2/m$ & 4 \\
+    $422$, $4mm$, $4/mmm$ & $8/mmm$ & $2/m$ & 8 \\
+    $32$, $3m$, $\overline{3}m$, $\overline{6}2m$ & $6/mmm$ & $2/m$ & 6 \\
+    $622$, $6mm$, $6/mmm$ & $12/mmm$ & $2/m$ & 12 \\
+    $23$, $m\overline{3}$, $432$, $\overline{4}3m$, $m\overline{3}m$
+      & $m\overline{3}m$ & $\overline{1}$ & 24 \\ % 432
+    \hline \hline
+  \end{tabular}
+\end{table}
+
+Then, we try to search for $\bm{Q}' \in \mathrm{Aut}_{\mathrm{A}(3)}(\mathcal{B}(\mathcal{U}_{\mathrm{np}}^{\mathrm{std}}))$ such that
+\begin{align}
+  \bm{Q}'^{-1} \bm{W}_{i} \bm{Q}' = \bm{W}_{\tau^{-1}(i)}
+    \quad (i = 1, \cdots, n).
+\end{align}
+If such a transformation $\bm{Q}'$ exists, an adjusted transformation $(\bm{P}, \bm{Q}_{0}\bm{Q}')$ gives
+\begin{align}
+  (\bm{P}, \bm{Q}_{0}\bm{Q}')^{-1} \mathcal{U}_{\mathrm{np}} (\bm{P}, \bm{Q}_{0}\bm{Q}') = \mathcal{U}_{\mathrm{np}}^{\mathrm{std}}.
+\end{align}
+
+
+% Let $\mathcal{P}_{\mathrm{c}}$ be one of 32 representatives of geometric crystal classes (Table 3.2.3.1 of ITA).
+% Then, we consider a normal subgroup $N \trianglelefteq \mathcal{P}_{\mathrm{c}}$.
+% Let $\mathcal{B}_{\mathrm{c}} = \{ \bm{W}_{\bm{R}} \}_{\bm{R}} \cong \mathcal{P}_{\mathrm{c}} / N$ be one of 32 representatives of geometric crystal classes.
+% Let $f: \mathcal{P}_{\mathrm{c}} / N \to \mathcal{B}_{\mathrm{c}}$ be an isomorphism.
+%
+% To enumerate all spin point group types, it is sufficient to enumerate $(\mathcal{P}_{\mathrm{c}}, N, \mathcal{B}_{\mathrm{c}}, f)$.
+% \begin{align}
+%   \bm{W}_{\bm{R}} &= \bm{E} \quad (\bm{R} \in N) \\
+%   \bm{W}_{\bm{R}} &= f(\bm{R}_{i}) \quad (\bm{R} \in \bm{R}_{i} N )
+% \end{align}

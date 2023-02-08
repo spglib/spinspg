@@ -1,0 +1,311 @@
+\section{Structure of spin space group}
+
+\subsection{Spin space group}
+
+A spin space group \cite{doi:10.1063/1.1708514,doi:10.1098/rspa.1966.0211,LITVIN1974538,Opechowski1986} is used to classify spin symmetry operations of spin arrangements.
+
+\begin{screen}
+  \begin{definition}[Spin space group]
+    Let $\mathcal{G}$ be a subgroup of $\mathrm{E}(3) \times \mathrm{O}(3)$.
+    When the following $\mathcal{F}(\mathcal{G})$ and $\mathcal{D}(\mathcal{G})$ are space groups, $\mathcal{G}$ is a \term{spin space group} \cite{LITVIN1974538},
+    \begin{align}
+      \mathcal{F}(\mathcal{G})
+        &\coloneqq \set{ g \in \mathrm{E}(3) }{ \exists \bm{W} \in \mathrm{O}(3) \,s.t.\, (g, \bm{W}) \in \mathcal{G} } \\
+      \mathcal{D}(\mathcal{G})
+        &\coloneqq \set{ g \in \mathrm{E}(3) }{ (g, \bm{E}) \in \mathcal{G} }.
+    \end{align}
+    For a spin space group $\mathcal{G}$, we call $\mathcal{F}(\mathcal{G})$ a \term{family space group} and $\mathcal{D}(\mathcal{G})$ a \term{maximal space subgroup}.
+  \end{definition}
+\end{screen}
+Reference~\cite{LITVIN1974538} did not impose the condition that $\mathcal{D}(\mathcal{G})$ is crystallographic.
+However, this condition seems to be required to guarantee a spin translation group $\mathcal{G}_{\mathrm{st}}(\mathcal{G})$ not to be subperiodic.
+
+\begin{screen}
+  \begin{definition}[Spin-space-group type]
+    Two spin space groups $\mathcal{G}_{1}$ and $\mathcal{G}_{2}$ belong to the same \term{spin-space-group type} if they are transformed to the other by an orientation-preserving transformation:
+    \begin{align}
+      \mathcal{G}_{1} \sim \mathcal{G}_{2}
+      \overset{\mathrm{def}}{\Longleftrightarrow}
+      \exists (\bm{P}, \bm{p}) \,s.t.\, (\bm{P}, \bm{p})^{-1} \mathcal{G}_{1} (\bm{P}, \bm{p}) = \mathcal{G}_{2},
+    \end{align}
+    where we define the action of transformations to a spin symmetry $(g, \bm{W})$ as
+    \begin{align}
+      (\bm{P}, \bm{p})^{-1} (g, \bm{W}) (\bm{P}, \bm{p})
+      \coloneqq
+      ((\bm{P}, \bm{p})^{-1} g (\bm{P}, \bm{p}), \bm{P}^{-1}\bm{W}\bm{P}).
+    \end{align}
+  \end{definition}
+\end{screen}
+
+\subsection{Spin-only group}
+
+\begin{screen}
+  \begin{definition}[Spin-only group]
+    Let $\mathcal{G}$ be a spin space group.
+    A \term{spin-only group} of $\mathcal{G}$ is
+    \begin{align}
+      \mathcal{P}_{\mathrm{so}}(\mathcal{G})
+      \coloneqq
+      \set{ \bm{W} \in \mathrm{O}(3) }{ ((\bm{E}, \bm{0}), \bm{W}) \in \mathcal{G} }.
+    \end{align}
+  \end{definition}
+\end{screen}
+
+A spin-only group $\mathcal{P}_{\mathrm{so}}(\mathcal{G})$ is a normal subgroup of $\mathcal{G}$, $1 \times \mathcal{P}_{\mathrm{so}}(\mathcal{G}) \trianglelefteq \mathcal{G}$.
+A \term{nontrivial spin space group} of $\mathcal{G}$ is defined as $\mathcal{G} / (1 \times \mathcal{P}_{\mathrm{so}}(\mathcal{G}))$.
+
+When a spin space group $\mathcal{G}$ is a stabilizer of a spin arrangement, spin-only groups are classified as Table~\ref{tab:spin_only_group} \cite{LITVIN1974538,PhysRevX.12.021016}.
+
+\begin{table}[tb]
+  \centering
+  \caption{Classification of spin-only groups}
+  \label{tab:spin_only_group}
+  \begin{tabular}{cc}
+    \hline \hline
+    Spin-only group & Spin arrangement \\
+    \hline
+    $\infty \infty m \cong \mathrm{O}(3)$ & Nonmagnetic \\
+    $\infty m \cong \mathrm{SO}(2) \rtimes \mathbb{Z}_{2} $ & Collinear \\
+    $m$ & Coplanar \\
+    $1$ & Noncoplaner \\
+    \hline \hline
+  \end{tabular}
+\end{table}
+
+\subsection{Spin translation group}
+
+\begin{screen}
+  \begin{definition}[Spin translation group]
+    Let $\mathcal{G}$ be a spin space group.
+    A \term{spin translation group} of $\mathcal{G}$ is
+    \begin{align}
+      \mathcal{G}_{\mathrm{st}}(\mathcal{G})
+      \coloneqq
+      \set{ ((\bm{E}, \bm{v}), \bm{W}) }{ ((\bm{E}, \bm{v}), \bm{W}) \in \mathcal{G}}.
+    \end{align}
+  \end{definition}
+\end{screen}
+
+Reference~\cite{Litvin:a09793} classified the spin translation groups.
+A \term{nontrivial spin translation group} of $\mathcal{G}$ is defined as $\mathcal{G}_{\mathrm{st}}(\mathcal{G}) / (1 \times \mathcal{P}_{\mathrm{so}}(\mathcal{G}))$.
+
+We write a translation subgroup and a point group of space group $\mathcal{S}$ as $\mathcal{T}(\mathcal{S})$ and $\mathcal{P}(\mathcal{S})$, respectively,
+\begin{align}
+  \mathcal{T}(\mathcal{S}) &\coloneqq \set{ (\bm{E}, \bm{t}) }{ (\bm{E}, \bm{t}) \in \mathcal{S} } \\
+  \mathcal{P}(\mathcal{S}) &\coloneqq \set{ \bm{W} }{ \exists \bm{v} \, s.t.\, (\bm{W}, \bm{v}) \in \mathcal{S} }.
+\end{align}
+
+The spin-only group $\mathcal{P}_{\mathrm{so}}(\mathcal{G})$ is a normal subgroup of $\mathcal{G}_{\mathrm{st}}(\mathcal{G})$.
+A translation subgroup of $\mathcal{D}(\mathcal{G})$ is also a normal subgroup of $\mathcal{G}_{\mathrm{st}}(\mathcal{G})$.
+Because $(1 \times \mathcal{P}_{\mathrm{so}}(\mathcal{G})) \cap (\mathcal{T}(\mathcal{D}(\mathcal{G})) \times 1) = \{ 1 \}$, we can consider a factor group $\mathcal{G}_{\mathrm{st}}(\mathcal{G}) / ( \mathcal{T}(\mathcal{D}(\mathcal{G})) \times \mathcal{P}_{\mathrm{so}}(\mathcal{G}))$.
+We write one of the coset decompositions as
+\begin{align}
+  \label{eq:spin_translation_group}
+  \mathcal{G}_{\mathrm{st}}(\mathcal{G})
+    &= \bigsqcup_{ \bm{v} }
+        ((\bm{E}, \bm{v}), \bm{W}_{\bm{v}})
+        \left(
+          \mathcal{T}(\mathcal{D}(\mathcal{G}))
+          \times
+          \mathcal{P}_{\mathrm{so}}(\mathcal{G})
+        \right),
+\end{align}
+where we choose $\bm{W}_{\bm{0}} = \bm{E}$.
+Because both $\mathcal{T}(\mathcal{D}(\mathcal{G}))$ and $\mathcal{T}(\mathcal{F}(\mathcal{G}))$ are three-dimensional translation subgroups, a factor group $\mathcal{T}(\mathcal{F}(\mathcal{G})) / \mathcal{T}(\mathcal{D}(\mathcal{G}))$ is finite.
+Thus, a set of the coset representatives $\{ ((\bm{E}, \bm{v}), \bm{W}_{\bm{v}}) \}_{\bm{v}}$ is finite.
+Be careful that $\bm{W}_{\bm{v}}$ may not be a crystallographic rotation in general!
+
+\subsection{Nontrivial spin point group}
+
+Because $\mathcal{G}_{\mathrm{st}}(\mathcal{G})$ is a normal subgroup of $\mathcal{G}$, we can consider a factor group $\mathcal{G} / \mathcal{G}_{\mathrm{st}}(\mathcal{G})$.
+\begin{screen}
+  \begin{definition}[Nontrivial spin point group]
+    Let $\mathcal{G}$ be a spin space group.
+    Consider a factor group $\mathcal{G} / \mathcal{G}_{\mathrm{st}}(\mathcal{G})$ and a corresponding coset decomposition,
+    \begin{align}
+      \mathcal{G}
+        = \bigsqcup_{ \bm{R} \in \mathcal{P}(\mathcal{F}(\mathcal{G})) } ((\bm{R}, \bm{v}_{\bm{R}}), \bm{W}_{\bm{R}}) \mathcal{G}_{\mathrm{st}}(\mathcal{G}),
+    \end{align}
+    where we choose $\bm{W}_{\bm{E}} = \bm{E}$ and $\bm{v}_{\bm{E}} = \bm{0}$.
+    A \term{nontrivial spin point group} of $\mathcal{G}$ is
+    \begin{align}
+      \mathcal{U}_{\mathrm{np}}(\mathcal{G})
+      \coloneqq
+      \set{ (\bm{R}, \bm{W}_{\bm{R}}) }{ ((\bm{R}, \bm{v}_{\bm{R}}), \bm{W}_{\bm{R}}) \in \mathcal{G} },
+    \end{align}
+    which is isomorphic to $\mathcal{G} / \mathcal{G}_{\mathrm{st}}(\mathcal{G})$.
+  \end{definition}
+\end{screen}
+
+The nontrivial spin point group $\mathcal{U}_{\mathrm{np}}(\mathcal{G})$ is also finite because point group $\mathcal{P}(\mathcal{F}(\mathcal{G}))$ is finite,
+Because the map $\bm{W}_{\bullet}: \mathcal{P}(\mathcal{F}(\mathcal{G})) \to \mathrm{O}(3)$ is linear, there exists a normal subgroup $N \trianglelefteq \mathcal{P}(\mathcal{F}(\mathcal{G}))$ such that $\{ \bm{W}_{\bm{R}} \}_{ \bm{R} \in \mathcal{P}(\mathcal{F}(\mathcal{G})) } \cong \mathcal{P}(\mathcal{F}(\mathcal{G})) / N$.
+Thus, spin point groups are classified by 32 crystallographic point groups and their normal subgroups \cite{Litvin:a14103}.
+
+\subsection{Spin point group}
+
+\todo{
+    In this subsection, we assume a spin space group $\mathcal{G}$ is a stabilizer of a spin arrangement.
+    Thus, $\mathcal{P}_{\mathrm{so}}(\mathcal{G})$ is isomorphic to $1$, $m$, $\infty m$, or $\infty \infty m$.
+}
+
+\subsubsection{Spin point group of spin translation group}
+
+We write a spin point group of a spin translation group in Eq.~\eqref{eq:spin_translation_group} as
+\begin{align}
+    \mathcal{B}_{\mathrm{st}}(\mathcal{G})
+        &\coloneqq \bigsqcup_{ \bm{v} } \bm{W}_{\bm{v}} \mathcal{P}_{\mathrm{so}}(\mathcal{G}).
+\end{align}
+Since $\mathcal{B}_{\mathrm{st}}: \mathcal{G} \to \mathcal{B}_{\mathrm{st}}(\mathcal{G})$ is a surjective group homomorphism, $\mathcal{P}_{\mathrm{so}}(\mathcal{G})$ is also a normal subgroup of $\mathcal{B}_{\mathrm{st}}(\mathcal{G})$.
+
+Let $\mathcal{B}$ be a subgroup of a normalizer of $\mathcal{P}_{\mathrm{so}}(\mathcal{G})$ in $\mathrm{O}(3)$.
+Then, we prove $\mathcal{B}$ is an internal direct product with $\mathcal{P}_{\mathrm{so}}(\mathcal{G})$ as follows.
+The normalizers of spin-only groups are classified in Table~\ref{tab:spin_only_normalizers}.
+For the noncoplanar case, $\mathcal{B} = 1 \times \mathcal{B} = \mathcal{P}_{\mathrm{so}} \times \mathcal{B}$ is trivially an internal direct product.
+For the collinear case, $\mathcal{B}$ is $\mathcal{P}_{\mathrm{so}}$ or $\mathcal{P}_{\mathrm{so}} \times C_{1h}$, which are both internal direct products.
+For the coplanar case, $\mathcal{B}$ should be one of the following (see Tables 3.2.1.3 and 3.2.1.6 of Ref.~\cite{hahn2016point}. Table~\ref{tab:point_groups} summarizes general point groups in three dimensions),
+\begin{itemize}
+  \item $C_{1h}$
+  \item $C_{nh} = C_{1h} \times C_{n}$ ($n \geq 2$, $n$ is even)
+  \item $D_{nh} = C_{1h} \times D_{n}$ ($n \geq 2$)
+  % C_1h is not normal in T_h, O_h, and I_h.
+  \item $C_{\infty h} = C_{1h} \times C_{\infty}$
+  \item $D_{\infty h} = C_{1h} \times D_{\infty}$.
+\end{itemize}
+Thus, $\mathcal{B}$ is an internal direct product.
+For the nonmagnetic case, $\mathcal{B} = \mathcal{P}_{\mathrm{so}}$ is trivially an internal direct product.
+
+% Normalizers of spin-only groups
+\begin{table}[tb]
+  \centering
+  \caption{
+    Normalizers of spin-only groups based on Table~3.5.4.2 of Ref.~\cite{koch2016normalizers}.
+  }
+  \label{tab:spin_only_normalizers}
+  \begin{tabular}{ccc}
+    \hline \hline
+    Spin arrangement & Spin-only group $\mathcal{P}_{\mathrm{so}}$ & Normalizer \\
+    \hline
+    Nonmagnetic & $\infty \infty m \,(\mathrm{O}(3))$ & $\infty \infty m \,(\mathrm{O}(3))$ \\
+    Collinear & $\infty m \,(C_{\infty v})$ & $\infty / mm \, (D_{\infty h})$ \\
+    Coplanar & $m \,(C_{1h})$ & $\infty / mm \, (D_{\infty h})$ \\
+    Noncoplanar & $1 \, (C_{1})$ & $\infty \infty m \,(\mathrm{O}(3))$ \\
+    \hline \hline
+  \end{tabular}
+\end{table}
+
+% General point groups
+\begin{table}[tb]
+  \centering
+  \caption{
+    General point groups in three dimensions, based on Tables 3.2.1.6 of Ref.~\cite{hahn2016point}
+  }
+  \label{tab:point_groups}
+  \begin{tabular}{cccc}
+    \hline \hline
+    & Schoenflies & Hellmann-Mauguin & Order \\
+    \hline
+    % Involutional
+    & $C_{1}$ & $1$                     & $1$ \\
+    & $C_{2}$ & $2$                     & $2$ \\
+    & $C_{1h}$ & $m \equiv \overline{2}$ & $2$ \\
+    & $C_{i}$ & $\overline{1}$          & $2$ \\
+    \hline
+    % Cyclic
+    $n \geq 3$                     & $C_{n}$               & $n$            & $n$ \\
+    $n \geq 4$, \mbox{$n$ is even} & $S_{n}$               & $\overline{n}$ & $n$ \\
+    $n \geq 2$, \mbox{$n$ is even} & $C_{nh}$              & $n / m$        & $2n$ \\
+    $n \geq 3$, \mbox{$n$ is odd}  & $C_{nh} \equiv S_{n}$ & $\overline{n}$ & $2n$ \\
+    $n \geq 2$, \mbox{$n$ is even} & $C_{nv}$              & $nmm$          & $2n$ \\
+    $n \geq 3$, \mbox{$n$ is odd}  & $C_{nv}$              & $nm$           & $2n$ \\
+    \hline
+    % Dihedral
+    $n \geq 2$, \mbox{$n$ is even} & $D_{n}$  & $n22$             & $2n$ \\
+    $n \geq 3$, \mbox{$n$ is odd}  & $D_{n}$  & $n2$              & $2n$ \\
+    $n \geq 2$, \mbox{$n$ is even} & $D_{nd}$ & $\overline{n}2m$  & $4n$ \\
+    $n \geq 3$, \mbox{$n$ is odd}  & $D_{nd}$ & $\overline{n}m$   & $4n$ \\
+    $n \geq 2$, \mbox{$n$ is even} & $D_{nh}$ & $n/mmm$           & $4n$ \\
+    $n \geq 3$, \mbox{$n$ is odd}  & $D_{nh}$ & $\overline{2n}2m$ & $4n$ \\
+    \hline
+    % Polyhedral
+    & $T$     & $23$             & $12$ \\
+    & $T_{h}$ & $m\overline{3}$  & $24$ \\
+    & $T_{d}$ & $\overline{4}3m$ & $24$ \\
+    & $O$     & $432$            & $24$ \\
+    & $O_{h}$ & $m\overline{3}m$ & $48$ \\
+    & $I$     & $235$            & $60$ \\
+    & $I_{h}$ & $m\overline{35}$ & $120$ \\
+    \hline
+    % Continuous
+    & $C_{\infty}$                       & $\infty$          & $\infty$ \\
+    & $C_{\infty h} \equiv S_{\infty}$   & $\infty / m$      & $\infty$ \\
+    & $C_{\infty v}$                     & $\infty m$        & $\infty$ \\
+    & $D_{\infty}$                       & $\infty 2$        & $\infty$ \\
+    & $D_{\infty h} \equiv D_{\infty d}$ & $\infty / mm$     & $\infty$\\
+    & $K$                                & $\infty \infty$   & $\infty$\\
+    & $K_{h}$                            & $\infty \infty m$ & $\infty$\\
+    \hline \hline
+  \end{tabular}
+\end{table}
+
+Therefore, there exists a \term{nontrivial spin point group of spin translation group} $\bar{\mathcal{B}}_{\mathrm{st}}(\mathcal{G}) \trianglelefteq \mathrm{O}(3)$ such that $\mathcal{B}_{\mathrm{st}}(\mathcal{G}) = \bar{\mathcal{B}}_{\mathrm{st}}(\mathcal{G}) \times \mathcal{P}_{\mathrm{so}}(\mathcal{G})$.
+Furthermore, $\bar{\mathcal{B}}_{\mathrm{st}}(\mathcal{G})$ is abelian because the map $\bm{v} \mapsto \bm{W}_{\bm{v}}$ in Eq.~\eqref{eq:spin_translation_group} is a surjective group homomorphism and a translation group is abelian.
+Abelian general point groups are listed in Table~\ref{tab:abelian_point_groups}.
+
+% Abelian general point groups
+\begin{table}[tb]
+  \centering
+  \caption{
+    Abelian general point groups in three dimensions.
+  }
+  \label{tab:abelian_point_groups}
+  \begin{tabular}{ccc}
+    \hline \hline
+    & Schoenflies & Hellmann-Mauguin \\
+    \hline
+    % Involutional
+    & $C_{1}$ & $1$                      \\
+    & $C_{2}$ & $2$                      \\
+    & $C_{1h}$ & $m \equiv \overline{2}$ \\
+    & $C_{i}$ & $\overline{1}$           \\
+    \hline
+    % Cyclic
+    $n \geq 3$                     & $C_{n}$               & $n$            \\
+    $n \geq 4$, \mbox{$n$ is even} & $S_{n}$               & $\overline{n}$ \\
+    $n \geq 2$, \mbox{$n$ is even} & $C_{nh}$              & $n / m$        \\
+    $n \geq 3$, \mbox{$n$ is odd}  & $C_{nh} \equiv S_{n}$ & $\overline{n}$ \\
+                                   & $C_{2v}$              & $2mm \,(mm2)$          \\
+    \hline
+    % Dihedral
+    & $D_{2}$  & $222$ \\
+    & $D_{2h}$ & $mmm$ \\
+    \hline
+    % Continuous
+    & $C_{\infty}$                       & $\infty$     \\
+    & $C_{\infty h} \equiv S_{\infty}$   & $\infty / m$ \\
+    \hline \hline
+  \end{tabular}
+\end{table}
+
+\subsubsection{\label{sec:family_spin_point_group}Spin point group of spin space group}
+
+We define a \term{spin point group} of a spin space group $\mathcal{G}$ as
+\begin{align}
+    \mathcal{U}(\mathcal{G}) \coloneqq \set{ (\bm{R}, \bm{W}) }{ \exists \bm{v} \,s.t.\, ((\bm{R}, \bm{v}), \bm{W}) \in \mathcal{G} }.
+\end{align}
+
+% Family spin point group: B
+A \term{family spin point group} of $\mathcal{U}(\mathcal{G})$ is defined as
+\begin{align}
+  \mathcal{B}(\mathcal{G})
+    &\coloneqq \set{ \bm{W} }{ (\bm{R}, \bm{W}) \in \mathcal{U}(\mathcal{G}) }.
+\end{align}
+Since $\mathcal{P}_{\mathrm{so}}(\mathcal{G})$ is a normal subgroup of $\mathcal{B}(\mathcal{G})$, $\mathcal{B}(\mathcal{G})$ is an internal direct product with $\mathcal{P}_{\mathrm{so}}(\mathcal{G})$ with a similar discussion in the previous section,
+\begin{align}
+  \mathcal{B}(\mathcal{G})
+    &=: \mathcal{P}_{\mathrm{so}}(\mathcal{G}) \times \bar{\mathcal{B}}(\mathcal{G}).
+\end{align}
+Because $\bar{\mathcal{B}}_{\mathrm{st}}(\mathcal{G})$ is an \textbf{abelian normal subgroup} of $\bar{\mathcal{B}}(\mathcal{G})$, $\bar{\mathcal{B}}(\mathcal{G})$ is an internal semidirect product with $\bar{\mathcal{B}}_{\mathrm{st}}(\mathcal{G})$,
+\begin{align}
+    \bar{\mathcal{B}}(\mathcal{G})
+        &=: \bar{\mathcal{B}}_{\mathrm{st}}(\mathcal{G}) \rtimes \bar{\mathcal{B}}_{\mathrm{np}}(\mathcal{G})
+\end{align}
