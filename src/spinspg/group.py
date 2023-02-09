@@ -32,9 +32,9 @@ class NonmagneticSymmetry:
     prim_permutations: array[int], (order, num_sites)
         ``num_sites`` is a number of sites in input cell.
         ``(prim_rotations[p], prim_translations[p])`` moves the ``i``-th site to the ``prim_permutations[p][i]``
-    centerings: array, (nc, 3)
+    prim_centerings: array[int], (nc, 3)
         Centering translations w.r.t. ``prim_lattice``
-    centering_permutations: (nc, N)
+    prim_centering_permutations: (nc, N)
     transformation: array[int], (3, 3)
         Transformation matrix from primitive to given cell
     """
@@ -43,7 +43,7 @@ class NonmagneticSymmetry:
     prim_rotations: NDArrayInt
     prim_translations: NDArrayFloat
     prim_permutations: list[Permutation]
-    prim_centerings: NDArrayFloat
+    prim_centerings: NDArrayInt
     prim_centering_permutations: list[Permutation]
     transformation: NDArrayInt
 
@@ -109,7 +109,9 @@ def get_symmetry_with_cell(
 
     prim_centerings = []
     for centering in centerings:
-        prim_centerings.append(tmat @ centering)
+        prim_centering = tmat @ centering
+        assert is_integer_array(prim_centering)
+        prim_centerings.append(np.around(prim_centering).astype(int))
 
     return NonmagneticSymmetry(
         prim_lattice=prim_lattice,
@@ -186,9 +188,9 @@ def get_primitive_spin_symmetry(
         nonmagnetic_symmetry.prim_centerings, nonmagnetic_symmetry.prim_centering_permutations
     ):
         if np.max(np.linalg.norm(magmoms[perm.permutation] - magmoms, axis=1)) < mag_symprec:
-            assert is_integer_array(centering)
-            stg_centerings.append(np.around(centering).astype(int))
+            stg_centerings.append(centering)
             stg_centering_permutations.append(perm)
+    assert len(nonmagnetic_symmetry.prim_centerings) % len(stg_centerings) == 0
 
     # Transformation matrix to primitive cell of maximal space subgroup
     stg_vectors = np.concatenate(
@@ -205,18 +207,30 @@ def get_primitive_spin_symmetry(
     # Spin only group
     spin_only_group = get_spin_only_group(magmoms, mag_symprec)
 
+    prim_centerings = [invtmat_stg @ centering for centering in stg_centerings]
+    # prim_spin_lattice.T @ transformation == nonmagnetic_symmetry.prim_lattice.T @ nonmagnetic_symmetry.transformation
+    transformation = invtmat_stg @ nonmagnetic_symmetry.transformation
+    assert is_integer_array(transformation)
+    transformation = np.around(transformation).astype(np.int_)
+
     # Spin translation group search
     spin_translation_coset = []
-    found_stg_centerings = set()
+    found_stg_centerings = []  # type: ignore
     for centering, perm in zip(
         nonmagnetic_symmetry.prim_centerings, nonmagnetic_symmetry.prim_centering_permutations
     ):
-        reduced_centering = invtmat_stg @ centering
-        reduced_centering -= np.rint(reduced_centering)
-        reduced_centering = tuple(np.around(tmat_stg @ reduced_centering).astype(np.int_))
-        if reduced_centering in found_stg_centerings:
+        # Two centerings are equivalent in primitive cell of spin translation group if they
+        # are translated to each other by lattice translations in `transformation`.
+        is_new_centering = True
+        for other in found_stg_centerings:
+            residual = invtmat_stg @ (centering - other)
+            residual -= np.rint(residual)
+            if np.allclose(residual, 0):
+                is_new_centering = False
+                break
+        if not is_new_centering:
             continue
-        found_stg_centerings.add(reduced_centering)
+        found_stg_centerings.append(centering)
 
         # Search W in O(3) s.t. new_magmoms @ W.T = magmoms[perm.permutation]
         new_magmoms = magmoms.copy()
@@ -229,22 +243,16 @@ def get_primitive_spin_symmetry(
         new_magmoms = new_magmoms @ W.T
         if np.max(np.linalg.norm(new_magmoms - perm_magmoms, axis=1)) < mag_symprec:
             # w.r.t. primitive cell of spin space group
+            reduced_centering = invtmat_stg @ centering
             spin_translation_coset.append(
                 SpinSymmetryOperation(
                     rotation=np.eye(3, dtype=np.int_),
-                    translation=invtmat_stg @ centering,
+                    translation=reduced_centering,
                     spin_rotation=W,
                 )
             )
 
-    # Transform centerings to primitive cell of spin space group
-    prim_lattice = nonmagnetic_symmetry.prim_lattice @ tmat_stg
-    prim_centerings = [invtmat_stg @ centering for centering in stg_centerings]
-    transformation = np.around(
-        np.linalg.inv(prim_lattice)
-        @ nonmagnetic_symmetry.prim_lattice
-        @ nonmagnetic_symmetry.transformation
-    ).astype(np.int_)
+    assert len(nonmagnetic_symmetry.prim_centerings) % len(found_stg_centerings) == 0
 
     # Spin space group search
     nontrivial_coset = []
@@ -259,7 +267,9 @@ def get_primitive_spin_symmetry(
             continue
 
         # Need to consider centerings for subgroup
-        for centering, centering_perm in zip(stg_centerings, stg_centering_permutations):
+        for centering, centering_perm in zip(
+            nonmagnetic_symmetry.prim_centerings, nonmagnetic_symmetry.prim_centering_permutations
+        ):
             new_perm: Permutation = centering_perm * perm
             new_magmoms = magmoms.copy()
             perm_magmoms = magmoms[new_perm.permutation]
@@ -281,8 +291,11 @@ def get_primitive_spin_symmetry(
                 )
                 break
 
+    # Transform centerings to primitive cell of spin space group
+    prim_spin_lattice = tmat_stg.T @ nonmagnetic_symmetry.prim_lattice
+
     return SpinSpaceGroup(
-        prim_lattice=prim_lattice,
+        prim_lattice=prim_spin_lattice,
         spin_only_group=spin_only_group,
         spin_translation_coset=spin_translation_coset,
         prim_centerings=prim_centerings,

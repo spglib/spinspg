@@ -152,3 +152,5 @@ docs_build/
 
 # Temporal file
 spin_point_group_table.tex
+
+.DS_Store
