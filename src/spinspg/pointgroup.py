@@ -6,7 +6,7 @@ from collections import deque
 import numpy as np
 from spglib import get_pointgroup
 from spgrep.pointgroup import pg_dataset
-from spgrep.utils import ndarray2d_to_integer_tuple
+from spgrep.utils import is_integer_array, ndarray2d_to_integer_tuple
 
 from spinspg.permutation import Permutation
 from spinspg.utils import NDArrayFloat, NDArrayInt
@@ -1353,13 +1353,14 @@ def get_pointgroup_representative_from_symbol(
 
 
 def get_pointgroup_representative(
-    prim_rotations: NDArrayInt | NDArrayFloat,
+    prim_rotations: NDArrayInt,
 ) -> tuple[str, NDArrayFloat, list[int]]:
     """Return representative of crystallographic point group.
 
     Parameters
     ----------
-    prim_rotations: array, (order, 3, 3)
+    prim_rotations: array[int], (order, 3, 3)
+        Integer rotation matrices
 
     Returns
     -------
@@ -1452,6 +1453,270 @@ def get_pointgroup_representative(
         raise ValueError("Unknown point group representative.")
 
     return symbol, P0 @ P1, mapping
+
+
+POINT_GROUP_TABLES = {
+    # Laue: -1
+    "1": ([0, 0, 0, 0, 0, 1, 0, 0, 0, 0], "-1"),
+    "-1": ([0, 0, 0, 0, 1, 1, 0, 0, 0, 0], "-1"),
+    # Laue: 2/m
+    "2": ([0, 0, 0, 0, 0, 1, 1, 0, 0, 0], "2/m"),
+    "m": ([0, 0, 0, 1, 0, 1, 0, 0, 0, 0], "2/m"),
+    "2/m": ([0, 0, 0, 1, 1, 1, 1, 0, 0, 0], "2/m"),
+    # Laue: mmm
+    "222": ([0, 0, 0, 0, 0, 1, 3, 0, 0, 0], "mmm"),
+    "mm2": ([0, 0, 0, 2, 0, 1, 1, 0, 0, 0], "mmm"),
+    "mmm": ([0, 0, 0, 3, 1, 1, 3, 0, 0, 0], "mmm"),
+    # Laue: 4/m
+    "4": ([0, 0, 0, 0, 0, 1, 1, 0, 2, 0], "4/m"),
+    "-4": ([0, 2, 0, 0, 0, 1, 1, 0, 0, 0], "4/m"),
+    "4/m": ([0, 2, 0, 1, 1, 1, 1, 0, 2, 0], "4/m"),
+    # Laue: 4/mmm
+    "422": ([0, 0, 0, 0, 0, 1, 5, 0, 2, 0], "4/mmm"),
+    "4mm": ([0, 0, 0, 4, 0, 1, 1, 0, 2, 0], "4/mmm"),
+    "-42m": ([0, 2, 0, 2, 0, 1, 3, 0, 0, 0], "4/mmm"),
+    "4/mmm": ([0, 2, 0, 5, 1, 1, 5, 0, 2, 0], "4/mmm"),
+    # Laue: -3
+    "3": ([0, 0, 0, 0, 0, 1, 0, 2, 0, 0], "-3"),
+    "-3": ([0, 0, 2, 0, 1, 1, 0, 2, 0, 0], "-3"),
+    # Laue: -3m
+    "32": ([0, 0, 0, 0, 0, 1, 3, 2, 0, 0], "-3m"),
+    "3m": ([0, 0, 0, 3, 0, 1, 0, 2, 0, 0], "-3m"),
+    "-3m": ([0, 0, 2, 3, 1, 1, 3, 2, 0, 0], "-3m"),
+    # Laue: 6/m
+    "6": ([0, 0, 0, 0, 0, 1, 1, 2, 0, 2], "6/m"),
+    "-6": ([2, 0, 0, 1, 0, 1, 0, 2, 0, 0], "6/m"),
+    "6/m": ([2, 0, 2, 1, 1, 1, 1, 2, 0, 2], "6/m"),
+    # Laue: 6/mmm
+    "622": ([0, 0, 0, 0, 0, 1, 7, 2, 0, 2], "6/mmm"),
+    "6mm": ([0, 0, 0, 6, 0, 1, 1, 2, 0, 2], "6/mmm"),
+    "-6m2": ([2, 0, 0, 4, 0, 1, 3, 2, 0, 0], "6/mmm"),
+    "6/mmm": ([2, 0, 2, 7, 1, 1, 7, 2, 0, 2], "6/mmm"),
+    # Laue: m-3
+    "23": ([0, 0, 0, 0, 0, 1, 3, 8, 0, 0], "m-3"),
+    "m-3": ([0, 0, 8, 3, 1, 1, 3, 8, 0, 0], "m-3"),
+    # Laue: m-3m
+    "432": ([0, 0, 0, 0, 0, 1, 9, 8, 6, 0], "m-3m"),
+    "-43m": ([0, 6, 0, 6, 0, 1, 3, 8, 0, 0], "m-3m"),
+    "m-3m": ([0, 6, 8, 9, 1, 1, 9, 8, 6, 0], "m-3m"),
+}
+
+
+def get_integer_point_group(prim_rotations: NDArrayFloat) -> tuple[NDArrayFloat, NDArrayInt]:
+    """Transform subgroup of orthgonal group O(3) to integer matrices.
+
+    Implement algorithm presented in "R. W. Grosse-Kunstleve. Algorithms for deriving crystallographic space-group information. Acta Cryst. A, 55, 383–395 (1999)".
+
+    Parameters
+    ----------
+    prim_rotations: array, (order, 3, 3)
+        Orthogonal matrices, that is ``np.allclose(prim_rotations[i] @ prim_rotations[i].T, np.eye(3))``
+
+    Returns
+    -------
+    P: array, (3, 3)
+        Transformation matrix
+        ``np.linalg.inv(P) @ prim_rotations[i] @ P == rotations[i]``
+    rotations: array[int], (order, 3, 3)
+    """
+    rotation_types = [_get_rotation_type(rot) for rot in prim_rotations]
+
+    lookup_table = [0 for _ in range(10)]
+    mapping = {
+        -6: 0,
+        -4: 1,
+        -3: 2,
+        -2: 3,
+        -1: 4,
+        1: 5,
+        2: 6,
+        3: 7,
+        4: 8,
+        6: 9,
+    }
+    for rotation_type in rotation_types:
+        lookup_table[mapping[rotation_type]] += 1
+
+    laue_class = None
+    for _, (std_table, std_laue) in POINT_GROUP_TABLES.items():
+        if lookup_table == std_table:
+            laue_class = std_laue
+            break
+
+    def _get_parallel_axes(proper_rotation_type: int) -> list[tuple[NDArrayFloat, NDArrayFloat]]:
+        axes = []
+        for rot, rotation_type in zip(prim_rotations, rotation_types):
+            if np.abs(rotation_type) != proper_rotation_type:
+                continue
+
+            rot_prop = np.linalg.det(rot) * rot  # Proper rotation
+            s = np.zeros((3, 3))
+            tmp = np.eye(3)
+            for _ in range(proper_rotation_type):
+                tmp = tmp @ rot_prop
+                s += tmp
+
+            for basis in [np.array([1, 0, 0]), np.array([0, 1, 0]), np.array([0, 0, 1])]:
+                axis = s @ basis
+                if np.allclose(axis, 0):
+                    continue
+                axes.append((axis, rot_prop))
+                break
+
+        distinct_axes = []  # type: ignore
+        for axis, rot_prop in axes:
+            unique = True
+            for other, _ in distinct_axes:
+                if np.allclose(np.cross(axis, other), 0):
+                    unique = False
+                    break
+            if unique:
+                distinct_axes.append((axis / np.linalg.norm(axis), rot_prop))
+
+        return distinct_axes
+
+    def _get_perpendicular_axes(rot, rotation_type) -> list[NDArrayFloat]:
+        s = np.zeros((3, 3))
+        tmp = np.eye(3)
+        for _ in range(rotation_type):
+            tmp = tmp @ rot
+            s += tmp
+
+        eigvals, eigvecs = np.linalg.eig(s.T)
+        axes = []
+        for i, eigval in enumerate(eigvals):
+            axis = eigvecs[:, i]
+            if np.isclose(eigval, 0):
+                axes.append(np.real(axis))
+                axes.append(np.imag(axis))
+
+        distinct_axes = []  # type: ignore
+        for axis in axes:
+            if np.allclose(axis, 0):
+                continue
+            unique = True
+            for other in distinct_axes:
+                if np.allclose(np.cross(axis, other), 0):
+                    unique = False
+                    break
+            if unique:
+                distinct_axes.append(axis / np.linalg.norm(axis))
+
+        return distinct_axes
+
+    if laue_class == "-1":
+        primary = np.array([1.0, 0.0, 0.0])
+        secondary = np.array([0.0, 1.0, 0.0])
+        tertiary = np.array([0.0, 0.0, 1.0])
+    elif laue_class == "2/m":
+        primaries = _get_parallel_axes(2)
+        primary, rot_primary = primaries[0]
+        axes = _get_perpendicular_axes(rot_primary, 2)
+        secondary, tertiary = axes[:2]
+    elif laue_class == "mmm":
+        primaries = _get_parallel_axes(2)
+        primary, _ = primaries[0]
+        secondary, _ = primaries[1]
+        tertiary, _ = primaries[2]
+    elif laue_class == "4/m":
+        primaries = _get_parallel_axes(4)
+        primary, rot_primary = primaries[0]
+        axes = _get_perpendicular_axes(rot_primary, 4)
+        secondary = axes[0]
+        tertiary = rot_primary @ secondary
+    elif laue_class == "4/mmm":
+        primaries = _get_parallel_axes(4)
+        primary, rot_primary = primaries[0]
+        secondary = None
+        for axis, _ in _get_parallel_axes(2):
+            if np.isclose(np.inner(axis, primary), 0):
+                secondary = axis
+                break
+        tertiary = rot_primary @ secondary
+    elif laue_class in ["-3", "6/m"]:
+        primaries = _get_parallel_axes(3)
+        primary, rot_primary = primaries[0]
+        axes = _get_perpendicular_axes(rot_primary, 3)
+        secondary = axes[0]
+        tertiary = rot_primary @ secondary
+    elif laue_class in ["-3m", "6/mmm"]:
+        primaries = _get_parallel_axes(3)
+        primary, rot_primary = primaries[0]
+        secondary = None
+        for axis, _ in _get_parallel_axes(2):
+            if np.isclose(np.inner(axis, primary), 0):
+                secondary = axis
+                break
+        tertiary = rot_primary @ secondary
+    elif laue_class == "m-3":
+        primaries = _get_parallel_axes(3)
+        primary, rot_primary = primaries[0]
+
+        # Secondary: two-fold axis
+        axes = _get_parallel_axes(2)
+        secondary, _ = axes[0]
+
+        # Tertiary: two-fold axis perpendicular to secondary
+        tertiary = None
+        for axis, _ in axes[1:]:
+            if np.isclose(np.inner(axis, secondary), 0):
+                tertiary = axis
+                break
+    elif laue_class == "m-3m":
+        primaries = _get_parallel_axes(4)
+        primary, _ = primaries[0]
+        secondary, _ = primaries[1]
+        tertiary, _ = primaries[2]
+    else:
+        raise ValueError("Fail to detect Laue class:", laue_class)
+
+    P = np.array([primary, secondary, tertiary]).T
+    if np.linalg.det(P) < 0:
+        P = -P
+    # Correction matrix for m-3
+    if laue_class == "m-3":
+        # Transform axes to (3_111, 2_010, 2_001)
+        correction = np.array(
+            [
+                [1 / np.sqrt(3), 0, 0],
+                [1 / np.sqrt(3), 1, 0],
+                [1 / np.sqrt(3), 0, 1],
+            ]
+        )
+        P = P @ np.linalg.inv(correction)
+
+    Pinv = np.linalg.inv(P)
+    rotations = []
+    for cart_rot in prim_rotations:
+        rot = Pinv @ cart_rot @ P
+        assert is_integer_array(rot)
+        rotations.append(np.around(rot).astype(int))
+
+    return P, rotations
+
+
+def _get_rotation_type(rotation: NDArrayFloat) -> int:
+    trace = np.around(np.trace(rotation)).astype(int)
+    det = np.around(np.linalg.det(rotation)).astype(int)
+
+    lookup_table = {
+        (-2, -1): -6,
+        (-1, -1): -4,
+        (0, -1): -3,
+        (1, -1): -2,
+        (-3, -1): -1,
+        (3, 1): 1,
+        (-1, 1): 2,
+        (0, 1): 3,
+        (1, 1): 4,
+        (2, 1): 6,
+    }
+
+    for key, rotation_type in lookup_table.items():
+        if (trace, det) == key:
+            return rotation_type
+
+    raise ValueError("Unreachable!")
 
 
 def traverse_spin_operations(generators):
