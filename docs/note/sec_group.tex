@@ -132,6 +132,7 @@ Because $\mathcal{G}_{\mathrm{st}}(\mathcal{G})$ is a normal subgroup of $\mathc
 
 We denote its corresponding coset decomposition,
 \begin{align}
+  \label{eq:spin_space_group_coset}
   \mathcal{G}
     = \bigsqcup_{ \bm{R} \in \mathcal{P}(\mathcal{F}(\mathcal{G})) } ((\bm{R}, \bm{v}_{\bm{R}}), \bm{W}_{\bm{R}}) \mathcal{G}_{\mathrm{st}}(\mathcal{G}),
 \end{align}
@@ -318,6 +319,60 @@ Because $\bar{\mathcal{B}}_{\mathrm{st}}(\mathcal{G})$ is an \textbf{abelian nor
         \right)
 \end{align}
 
+\subsubsection{Spin point group of spin space group}
+
+A \term{family point group} of $\mathcal{G}$ is defined as
+\begin{align}
+  \mathcal{R}(\mathcal{G})
+    &\coloneqq \set{ \bm{R} }{ \exists \bm{v}, \bm{W} \,s.t.\, ((\bm{R}, \bm{v}), \bm{W}) \in \mathcal{G} }
+    = \mathcal{P}(\mathcal{F}(\mathcal{G})).
+\end{align}
+A \term{maximal point subgroup} of $\mathcal{G}$ is defined as
+\begin{align}
+  \mathcal{K}(\mathcal{G})
+    &\coloneqq \set{ \bm{R} }{ \exists \bm{v} \,s.t.\, ((\bm{R}, \bm{v}), \bm{E}) \in \mathcal{G} }.
+\end{align}
+
+We can construct $\mathcal{U}(\mathcal{G})$ as an internal semidirect products with the coset representatives in Eq.~\eqref{eq:spin_space_group_coset}:
+\begin{align}
+  \mathcal{U}(\mathcal{G})
+    &= \bigsqcup_{ \bm{R} \in \mathcal{R}(\mathcal{G}) } (\bm{R}, \bm{W}_{\bm{R}}) \left( \mathcal{P}_{\mathrm{so}}(\mathcal{G}) \times \bar{\mathcal{B}}_{\mathrm{st}}(\mathcal{G}) \right) \nonumber \\
+    &= \mathcal{P}_{\mathrm{so}}(\mathcal{G})
+        \times \left(
+          \bar{\mathcal{B}}_{\mathrm{st}}(\mathcal{G})
+          \rtimes
+          \mathcal{U}_{\mathrm{np}}(\mathcal{G})
+         \right)
+       \quad (\because \mbox{ $\mathcal{P}_{\mathrm{so}}(\mathcal{G}), \bar{\mathcal{B}}_{\mathrm{st}}(\mathcal{G}) \trianglelefteq \mathcal{U}(\mathcal{G})$, $\bar{\mathcal{B}}_{\mathrm{st}}(\mathcal{G})$ is abelian } ) \nonumber \\
+    &= \mathcal{P}_{\mathrm{so}}(\mathcal{G})
+        \times \left(
+          \bar{\mathcal{B}}_{\mathrm{st}}(\mathcal{G})
+          \rtimes
+          \left(
+            \mathcal{K}(\mathcal{G})
+            \rtimes
+            \bar{\mathcal{B}}_{\mathrm{np}}(\mathcal{G})
+          \right)
+         \right)
+      \quad (\because \mathcal{K}(\mathcal{G}) \cap \bar{\mathcal{B}}_{\mathrm{np}}(\mathcal{G}) = \{ 1 \})
+\end{align}
+where we can choose the nontrivial spin point group $\mathcal{U}_{\mathrm{np}}(\mathcal{G})$ as a subgroup of $\mathcal{U}(\mathcal{G})$,
+\begin{align}
+  \mathcal{U}_{\mathrm{np}}(\mathcal{G})
+    &= \left\{ (\bm{R}, \bm{W}_{\bm{R}}) \right\}_{ \bm{R} \in \mathcal{R}(\mathcal{G}) } \nonumber \\
+    &= \mathcal{K}(\mathcal{G}) \rtimes \bar{\mathcal{B}}_{\mathrm{np}}(\mathcal{G}) \nonumber \\
+    &= \bigsqcup_{ \bm{S} \in \mathcal{R}(\mathcal{G}) / \mathcal{K}(\mathcal{G}) } (\bm{S}, \bm{W}_{\bm{S}}) \mathcal{K}(\mathcal{G}).
+\end{align}
+
+
+\subsubsection{WIP: Enumeration of spin point group types}
+
+\begin{itemize}
+  \item Noncoplanar: Table~\ref{tab:spin_point_group_noncoplanar}
+  \item Coplanar: Table~\ref{tab:spin_point_group_coplanar}
+  \item Collinear: Table~\ref{tab:spin_point_group_collinear_nonmagnetic}
+\end{itemize}
+
 % Spin point groups (with spin-only groups)
 \begin{table}[tb]
   \centering
@@ -325,7 +380,7 @@ Because $\bar{\mathcal{B}}_{\mathrm{st}}(\mathcal{G})$ is an \textbf{abelian nor
     \todo{}
     Enumeration of spin point groups for noncoplanar.
   }
-  \label{tab:spin_point_group}
+  \label{tab:spin_point_group_noncoplanar}
   \begin{tabular}{ccc}
     \hline \hline
     $\bar{\mathcal{B}}_{\mathrm{st}}(\mathcal{G}) \rtimes \bar{\mathcal{B}}_{\mathrm{np}}(\mathcal{G})$  % Compliment of P_{so}, which is a subgroup of N(P_{so})
@@ -386,7 +441,6 @@ Because $\bar{\mathcal{B}}_{\mathrm{st}}(\mathcal{G})$ is an \textbf{abelian nor
     \hline \hline
   \end{tabular}
 \end{table}
-
 
 \begin{table}[tb]
   \centering

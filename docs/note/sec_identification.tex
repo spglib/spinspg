@@ -1,36 +1,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Identification of nontrivial spin point group type}
 
-\todo{}
-
-It is useful to define the following point groups derived from a nontrivial spin point group $\mathcal{U}_{\mathrm{np}}$.
-A \term{family point group} of $\mathcal{U}_{\mathrm{np}}$ is defined as
-\begin{align}
-  \mathcal{R}(\mathcal{U}_{\mathrm{np}})
-    &\coloneqq \set{ \bm{R}_{i} }{ (\bm{R}_{i}, \bm{W}_{i}) \in \mathcal{U}_{\mathrm{np}} }.
-\end{align}
-A \term{maximal point subgroup} of $\mathcal{U}_{\mathrm{np}}$ is defined as
-\begin{align}
-  \mathcal{K}(\mathcal{U}_{\mathrm{np}})
-    &\coloneqq \set{ \bm{R}_{i} }{ (\bm{R}_{i}, \bm{E}) \in \mathcal{U}_{\mathrm{np}} }.
-\end{align}
-A \term{family spin point group} of $\mathcal{U}_{\mathrm{np}}$ is defined as
-\begin{align}
-  \mathcal{B}(\mathcal{U}_{\mathrm{np}})
-    &\coloneqq \set{ \bm{W}_{i} }{ (\bm{R}_{i}, \bm{W}_{i}) \in \mathcal{U}_{\mathrm{np}} }.
-\end{align}
-As discussed in Sec.~\ref{sec:family_spin_point_group}, $\bm{W}_{i}$ can be chosen to form a group in $\mathrm{O}(3)$.
-
 \subsection{Nontrivial spin point group type}
 
-Two nontrivial spin point groups, $\mathcal{U}_{\mathrm{np}} = \{ (\bm{R}_{i}, \bm{W}_{i}) \}_{i=1}^{n}$ and $\mathcal{U}_{\mathrm{np}}'= \{ (\bm{R}_{i}', \bm{W}_{i}') \}_{i=1}^{n}$ belong to the same \term{spin point group type} if there exist transformation matrices $\bm{P}, \bm{Q} \in \mathrm{SL}(3, \mathbb{R})$ such that
+Two nontrivial spin point groups, $\mathcal{U}_{\mathrm{np}} = \{ (\bm{R}_{i}, \bm{W}_{i}) \}_{i=1}^{n}$ and $\mathcal{U}_{\mathrm{np}}'= \{ (\bm{R}_{i}', \bm{W}_{i}') \}_{i=1}^{n}$ belong to the same \term{nontrivial spin point group type} if there exist transformation matrices $\bm{P}, \bm{Q} \in \mathrm{SL}(3, \mathbb{R})$ such that
 \begin{align}
   \mathcal{U}_{\mathrm{np}}'
     = \{ (\bm{P}^{-1} \bm{R}_{i} \bm{P}, \bm{Q}^{-1} \bm{W}_{i} \bm{Q}) \}_{i=1}^{n}
     =: (\bm{P}, \bm{Q})^{-1} \mathcal{U}_{\mathrm{np}} (\bm{P}, \bm{Q}).
 \end{align}
 
-Representatives of 598 nontrivial spin point groups are tabulated in Ref.~\cite{Litvin:a14103}.
+Representatives of 598 nontrivial spin point group types are tabulated in Ref.~\cite{Litvin:a14103}.
 For a given nontrivial spin point group $\mathcal{U}_{\mathrm{np}}$, we write a corresponding representative with the same spin point group type as $\mathcal{U}_{\mathrm{np}}^{\mathrm{std}} = \{ (\bm{R}_{i}^{\mathrm{std}}, \bm{W}_{i}^{\mathrm{std}}) \}_{i=1}^{n}$.
 
 The derived point groups $\mathcal{R}(\mathcal{U}_{\mathrm{np}})$ and $\mathcal{B}(\mathcal{U}_{\mathrm{np}})$ can be transformed into one of 32 representatives of geometric crystal classes.

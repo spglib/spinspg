@@ -10,10 +10,10 @@ Table~\ref{tab:variables_for_writing} summarizes notations and terminology in th
         \hline\hline
         Symbol or term & Meaning \\ \hline
         % Symmetry operation
-        Spin symmetry operation $(g, \bm{W})$ & Pair of spatial symmetry operation $g$ and spin rotation $\bm{W}$ \\
+        Spin symmetry operation $(g, \bm{W})$ & Pair of spatial operation $g$ and spin rotation $\bm{W}$ \\
         \hline
         % Spin arrangement
-        Spin arrangement & A set of pairs of a crystal structure and magnetic moments \\
+        Spin arrangement & Pair of a crystal structure and magnetic moments \\
         Nonmagnetic & Spin arrangement with spin-only group $\infty \infty m$ \\
         Collinear & Spin arrangement with spin-only group $\infty m$ \\
         Coplanar & Spin arrangement with spin-only group $m$ \\
@@ -21,7 +21,7 @@ Table~\ref{tab:variables_for_writing} summarizes notations and terminology in th
         \hline
         % Space group
         Space group $\mathcal{S}$ & \\
-        Translation subgroup $\mathcal{T}(\mathcal{S})$ & Subgroup of $\mathcal{S}$ composed of translations with identity rotations \\
+        Translation subgroup $\mathcal{T}(\mathcal{S})$ & Translation parts of $\mathcal{S}$ with identity rotations \\
         Point group $\mathcal{P}(\mathcal{S})$ & Subgroup of $\mathcal{S}$ composed of rotation parts \\
         \hline
         % Spin space group
@@ -32,7 +32,7 @@ Table~\ref{tab:variables_for_writing} summarizes notations and terminology in th
         Nontrivial spin space group $\bar{\mathcal{G}}$ & Compliment of $\mathcal{P}_{\mathrm{so}}(\mathcal{G})$ in $\mathcal{G}$, $\mathcal{G} = \mathcal{P}_{\mathrm{so}}(\mathcal{G}) \times \bar{\mathcal{G}}$ \\
         \hline
         % Spin-only group
-        Spin-only group $\mathcal{P}_{\mathrm{so}}(\mathcal{G})$ & Point group of spin rotations with identity spatial operations \\
+        Spin-only group $\mathcal{P}_{\mathrm{so}}(\mathcal{G})$ & Spin-rotation parts of $\mathcal{G}$ with identity spatial operations \\
         \hline
         % Spin translation group
         Spin translation group $\mathcal{G}_{\mathrm{st}}(\mathcal{G})$ & Subgroup of $\mathcal{G}$ with identity rotations \\
@@ -52,6 +52,10 @@ Table~\ref{tab:variables_for_writing} summarizes notations and terminology in th
         Nontrivial family spin point group of $\mathcal{G}$, $\bar{\mathcal{B}}_{\mathrm{np}}(\mathcal{G})$
             & Compliment of $\bar{\mathcal{B}}(\mathcal{G})$ with $\mathcal{B}_{\mathrm{st}}(\mathcal{G})$ \\
             & $\mathcal{B}(\mathcal{G}) = \mathcal{P}_{\mathrm{so}}(\mathcal{G}) \times \left( \mathcal{B}_{\mathrm{st}}(\mathcal{G}) \rtimes \bar{\mathcal{B}}_{\mathrm{np}}(\mathcal{G}) \right)$ \\
+        Family point group of $\mathcal{G}$ & Rotation parts of $\mathcal{G}$ \\
+        Maximal point subgroup of $\mathcal{G}$ & Rotation parts of $\mathcal{G}$ with identity spin rotations \\
+        % Spin point group type
+        Nontrivial spin point group type & Equivalence among nontrivial spin point groups \\
         \hline\hline
     \end{tabular}
 \end{table*}
