@@ -1,0 +1,20 @@
+\section{\label{appx:procrustes}Procrustes problem}
+
+For $g \in \mathcal{S}$, we consider to search for $\bm{W} \in \mathrm{O}(3)$ such that $\bm{W} \bm{m}_{i} = \bm{m}_{\sigma_{g}(i)}$ for all $i$.
+We choose a candidate $\tilde{\bm{W}}$ by solving the following Procrustes problem \cite{10.1093/acprof:oso/9780198510581.001.0001}:
+\begin{align}
+  \tilde{\bm{W}}
+    &=\argmin_{ \bm{W} \in \mathrm{O}(3) } \norm{ \bm{M}_{g} - \bm{W} \bm{M} }_{F} \\
+  \bm{M}_{g}
+    &\coloneqq \left( \bm{m}_{\sigma_{g}(1)} \cdots \bm{m}_{\sigma_{g}(N)} \right)
+    \quad \in \mathbb{R}^{3 \times N}.
+\end{align}
+We can write $\tilde{\bm{W}}$ with singular value decomposition of $\bm{M}_{g} \bm{M}^{\top}$,
+\begin{align}
+  \bm{M}_{g} \bm{M}^{\top}
+    = \bm{U} \bm{\Sigma} \bm{V}^{\top}
+\end{align}
+as
+\begin{align}
+  \tilde{\bm{W}} = \bm{U} \bm{V}^{\top}.
+\end{align}

@@ -1,4 +1,6 @@
 import numpy as np
+import pytest
+from spglib import get_magnetic_symmetry
 
 from spinspg.core import get_spin_symmetry
 from spinspg.group import get_primitive_spin_symmetry, get_symmetry_with_cell
@@ -58,6 +60,33 @@ def test_spin_space_group_rutile(rutile):
 
     assert len(ssg.nontrivial_coset) == 16  # 4/mmm
     assert len(kernel_pointgroup) == 8  # 4/m
+
+
+@pytest.mark.parametrize(
+    "testcase,spin_only_group_type,axis",
+    [
+        ("Cr_in_Cr2O3", SpinOnlyGroupType.COLLINEAR, [1, 0, 0]),
+        ("Pr_in_PrScSb", SpinOnlyGroupType.COLLINEAR, [0, 0, 1]),
+        ("Mn_in_Mn3ReO6", SpinOnlyGroupType.COPLANAR, [0, 0, 1]),
+        ("Ni_in_NiTa2O6", SpinOnlyGroupType.COLLINEAR, [1, -1, 0]),
+    ],
+)
+def test_spin_space_groups(request, testcase, spin_only_group_type, axis):
+    lattice, positions, numbers, magmoms = request.getfixturevalue(testcase)
+    symprec = 1e-5
+    ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, -1)
+    ssg = get_primitive_spin_symmetry(ns, magmoms, symprec)
+
+    assert ssg.spin_only_group.spin_only_group_type == spin_only_group_type
+    assert np.allclose(np.cross(ssg.spin_only_group.axis, axis), 0)
+
+    num_sym = (
+        len(ssg.nontrivial_coset)
+        * len(ssg.spin_translation_coset)
+        * np.around(np.abs(np.linalg.det(ssg.transformation))).astype(int)
+    )
+    mag_symmetry = get_magnetic_symmetry((lattice, positions, numbers, magmoms), symprec=symprec)
+    assert num_sym >= len(mag_symmetry["rotations"])
 
 
 def test_get_spin_symmetry(rutile):

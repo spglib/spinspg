@@ -54,13 +54,18 @@ def get_spin_symmetry(
     rotations = []
     translations = []
     spin_rotations = []
+
+    # Products of "translations in cell", "nontrivial spin translation group's coset", and "nontrivial spin space group's coset"
     for ops in ssg.nontrivial_coset:
         # Transform to primitive to input cell
         new_rotation = np.around(invtmat @ ops.rotation @ tmat).astype(np.int_)
-        for centering in ssg.prim_centerings:
-            new_translation = np.remainder(invtmat @ (ops.translation + centering), 1)
-            rotations.append(new_rotation)
-            translations.append(new_translation)
-            spin_rotations.append(ops.spin_rotation)
+        for ops_st in ssg.spin_translation_coset:
+            for centering in ssg.prim_centerings:
+                new_translation = np.remainder(
+                    invtmat @ (ops.translation + ops_st.translation + centering), 1
+                )
+                rotations.append(new_rotation)
+                translations.append(new_translation)
+                spin_rotations.append(ops_st.spin_rotation @ ops.spin_rotation)
 
     return spin_only_group, np.array(rotations), np.array(translations), np.array(spin_rotations)

@@ -1,0 +1,313 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Spin symmetry operation search}
+
+A spin arrangement is represented by the following four objects:
+(1) basis vectors of its lattice $\bm{A} = (\bm{a}_{1}, \bm{a}_{2}, \bm{a}_{3})$,
+(2) an array of point coordinates of sites in its unit cell $\bm{X} = (\bm{x}_{1}, \cdots, \bm{x}_{N})$,
+(3) an array of atomic types of sites in its unit cell $\bm{T} = (t_{1}, \cdots, t_{N})$,
+and (4) an array of magnetic moments of sites in its unit cell $\bm{M} = (\bm{m}_{1}, \cdots, \bm{m}_{N})$,
+where $N$ is the number of sites in the unit cell.
+
+First, we consider a crystal structure $(\bm{A}, \bm{X}, \bm{T})$ obtained by ignoring magnetic moments of $(\bm{A}, \bm{X}, \bm{T}, \bm{M})$.
+A space group of $(\bm{A}, \bm{X}, \bm{T})$ is written as a stabilizer subgroup of $\mathrm{E}(3)$ that preserves $(\bm{A}, \bm{X}, \bm{T})$:
+\begin{align}
+    \mathcal{S}
+        &\coloneqq \set{
+                g = ( \overline{\bm{R}}, \overline{\bm{v}} )_{\bm{A}} \in \mathrm{E}(3)
+            }{
+                \begin{array}{l}
+                    \overline{\bm{R}} \in \mathbb{Z}^{3 \times 3} \\
+                    \exists \sigma_{g} \in \mathfrak{S}_{N}, \forall i, \\
+                    \overline{\bm{R}} \bm{x}_{i} + \overline{\bm{v}} \equiv \bm{x}_{\sigma_{g}(i)} \, (\mathrm{mod} \, 1) \\
+                    t_{i} = t_{\sigma_{g}(i)}
+                \end{array}
+            },
+\end{align}
+where $\mathfrak{S}_{N}$ is a symmetric group of degree $N$ and $( \overline{\bm{R}}, \overline{\bm{v}} )_{\bm{A}} \coloneqq ( \bm{A}\overline{\bm{R}}\bm{A}^{-1}, \bm{A}\overline{\bm{v}} )$ \footnote {
+  The condition $\overline{\bm{R}} \in \mathbb{Z}^{3 \times 3}$ corresponds to Spglib's convention to omit symmetry operations that do not preserve a supercell.
+}.
+
+Let $\bm{A}_{\mathcal{S}}$ be one of primitive basis vectors for $(\bm{A}, \bm{X}, \bm{T})$.
+We write a translation subgroup formed by basis vector $\bm{A}$ as
+\begin{align}
+  \mathcal{T}_{\bm{A}} \coloneqq \set{ (\bm{E}, \bm{n})_{\bm{A}} }{ \bm{n} \in \mathbb{Z}^{3} }.
+\end{align}
+Then we consider a finite coset decomposition of $\mathcal{S}$,
+\begin{align}
+  \mathcal{T}_{\bm{A}_{\mathcal{S}}}
+    &= \bigsqcup_{ \overline{ \bm{t} }^{\mathcal{S}} }
+      \left( \bm{E}, \overline{ \bm{t} }^{\mathcal{S}} \right)_{ \bm{A}_{\mathcal{S}} }
+      \mathcal{T}_{\bm{A}} \\
+  \mathcal{S}
+    &= \bigsqcup_{
+          \overline{\bm{R}}^{\mathcal{S}} \in \bm{A}_{\mathcal{S}}^{-1} \mathcal{P}(\mathcal{S}) \bm{A}_{\mathcal{S}}
+      }
+      \bigsqcup_{
+          \left( \bm{E}, \overline{ \bm{t} }^{\mathcal{S}} \right)_{ \bm{A}_{\mathcal{S}} } \mathcal{T}_{\bm{A}}
+          \in \mathcal{T}_{\bm{A}_{\mathcal{S}}} / \mathcal{T}_{\bm{A}}
+      }
+      \left(
+        \overline{\bm{R}}^{\mathcal{S}},
+        \overline{ \bm{v} }^{\mathcal{S}}(\overline{\bm{R}}^{\mathcal{S}})
+      \right)_{ \bm{A}_{\mathcal{S}} }
+      \left( \bm{E}, \overline{ \bm{t} }^{\mathcal{S}} \right)_{ \bm{A}_{\mathcal{S}} }
+      \mathcal{T}_{\bm{A}},
+\end{align}
+where $\overline{ \bm{v} }^{\mathcal{S}}(\overline{\bm{R}}^{\mathcal{S}})$ is a translation part for a rotation $\bm{A}_{\mathcal{S}} \overline{\bm{R}}^{\mathcal{S}} \bm{A}_{\mathcal{S}}^{-1}$.
+Note that a point group of $\mathcal{S}$ is $\mathcal{P}(\mathcal{S}) = \{ \bm{A}_{\mathcal{S}} \overline{\bm{R}}^{\mathcal{S}} \bm{A}_{\mathcal{S}}^{-1} \}_{ \overline{\bm{R}}^{\mathcal{S}} }$.
+
+A spin space group of $(\bm{A}, \bm{X}, \bm{T}, \bm{M})$ is written as a stabilizer subgroup of $\mathrm{E}(3) \times \mathrm{O}(3)$ that preserves $(\bm{A}, \bm{X}, \bm{T}, \bm{M})$:
+\begin{align}
+  \mathcal{G}
+    &\coloneqq \set{
+      (g, \bm{W}) \in \mathrm{E}(3) \times \mathrm{O}(3)
+    }{
+        \begin{array}{l}
+          \exists \sigma_{g} \in \mathfrak{S}_{N}, \forall i, \\
+          g \bm{x}_{i} \equiv \bm{x}_{\sigma_{g}(i)} \, (\mathrm{mod} \, 1) \\
+          t_{i} = t_{\sigma_{g}(i)} \\
+          \bm{W} \bm{m}_{i} = \bm{m}_{\sigma_{g}(i)}
+        \end{array}
+    } \\
+    &= \set{
+      (g, \bm{W}) \in \mathcal{S} \times \mathrm{O}(3)
+    }{
+        \begin{array}{l}
+          \exists \sigma_{g} \in \mathfrak{S}_{N}, \forall i, \\
+          g \bm{x}_{i} \equiv \bm{x}_{\sigma_{g}(i)} \, (\mathrm{mod} \, 1) \\
+          t_{i} = t_{\sigma_{g}(i)} \\
+          \bm{W} \bm{m}_{i} = \bm{m}_{\sigma_{g}(i)}
+        \end{array}
+    } \\
+  \mathcal{D} &\coloneqq \mathcal{D}(\mathcal{G}) \\
+  \mathcal{F} &\coloneqq \mathcal{F}(\mathcal{G}).
+\end{align}
+
+\subsection{Spin-only group search}
+
+\begin{align}
+  \mathcal{P}_{\mathrm{so}}
+    &\coloneqq \mathcal{P}_{\mathrm{so}}(\mathcal{G})
+    = \set{
+        \bm{W} \in \mathrm{O}(3)
+      }{
+        \bm{W} \bm{m}_{i} = \bm{m}_{i} \,(\forall i)
+      }
+\end{align}
+
+Consider a moment of inertia tensor of $\bm{M}$,
+\begin{align}
+  \bm{N} \coloneqq \sum_{i=1}^{N} \bm{m}_{i} \otimes \bm{m}_{i}.
+\end{align}
+Because $\bm{N}$ is a symmetric semi-definite matrix, we can consider its eigen decomposition,
+\begin{align}
+  \bm{N} = \sum_{r=1}^{3} \sigma_{r} \hat{\bm{n}}_{r} \otimes \hat{\bm{n}}_{r},
+\end{align}
+where $\sigma_{1} \geq \sigma_{2} \geq \sigma_{3} \geq 0$ and $\{ \hat{\bm{n}}_{r} \}_{r=1}^{3}$ are orthonormal.
+
+\subsubsection{Nonmagnetic spin arrangement}
+
+When all magnetic moments are zero, the spin arrangement is called \term{nonmagnetic}.
+A spin-only group of a nonmagnetic spin arrangement is $\mathcal{P}_{\mathrm{so}} = \mathrm{O}(3)$.
+In practice, we compare magnetic moments with a tolerance $\epsilon$,
+\begin{align}
+  \bm{m}_{i} = \bm{0} \rightarrow \norm{ \bm{m}_{i} }_{2} < \epsilon.
+\end{align}
+
+\subsubsection{Collinear spin arrangement}
+
+When a spin arrangement is not nonmagnetic and all magnetic moments are parallel or antiparallel, the spin arrangement is called \term{collinear}.
+Let $\hat{\bm{n}}$ be a direction parallel or antiparallel to the magnetic moments.
+Let $\hat{\bm{n}}'$ be one of the directions perpendicular to the magnetic moments.
+A spin-only group of a collinear spin arrangement is
+\begin{align*}
+  \mathcal{P}_{\mathrm{so}}
+    = \set{ R_{\theta \hat{\bm{n}}} m_{\hat{\bm{n}}'}^{l} }{ 0 \leq \theta < 2 \pi, l=0, 1 }.
+\end{align*}
+Here $R_{\theta \hat{\bm{n}}}$ is a rotation along axis $\hat{\bm{n}}$ by $\theta$.
+$m_{\hat{\bm{n}}'}$ is a mirror operation perpendicular to $\hat{\bm{n}}'$.
+
+When a spin arrangement is collinear, the eigenvector $\hat{\bm{n}}_{1}$ should be parallel or antiparallel to all magnetic moments.
+We can check it with tolerance as
+\begin{align}
+  \forall \theta \in [0, 2 \pi ), l \in \{ 0, 1 \}, R_{\theta \hat{\bm{n}}_{1}} m_{\hat{\bm{n}}_{1}'}^{l} \bm{m}_{i} = \bm{m}_{i}
+  \rightarrow
+  2 \norm{ \bm{m}_{i} - (\bm{m}_{i} \cdot \hat{\bm{n}}_{1})\hat{\bm{n}}_{1} }_{2} < \epsilon.
+\end{align}
+
+\subsubsection{Coplanar spin arrangement}
+
+When a spin arrangement is not collinear and all magnetic moments are perpendicular to $\hat{\bm{n}}$, the spin arrangement is called \term{coplanar}.
+A spin-only group of a coplanar spin arrangement is $\mathcal{P}_{\mathrm{so}} = \{ 1, m_{\hat{\bm{n}}} \}$.
+
+When a spin arrangement is coplanar, the eigenvector $\hat{\bm{n}}_{3}$ should be perpendicular to all magnetic moments.
+We can check it with tolerance as
+\begin{align}
+  m_{\hat{\bm{n}}_{3}} \bm{m}_{i} = \bm{m}_{i}
+  \rightarrow
+  2 \norm{ (\bm{m}_{i} \cdot \hat{\bm{n}}_{3}) \hat{\bm{n}}_{3}}_{2} < \epsilon.
+\end{align}
+
+\subsubsection{Noncoplanar spin arrangement}
+
+When a spin arrangement is not coplanar, the spin arrangement is called \term{noncoplanar}.
+A spin-only group of a noncoplanar spin arrangement is $\mathcal{P}_{\mathrm{so}} = \{ 1 \}$.
+
+\subsection{Translation subgroup of maximal space subgroup}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \coordinate (TA) at (0, 0);
+    \coordinate (TAD) at (0, 2);
+    \coordinate (TAS) at (0, 4);
+    \coordinate (SD) at (2, 3);
+    \coordinate (mid) at (2, 5);
+    \coordinate (S) at (4, 6);
+
+    \node at (TA) [left] {$\mathcal{T}_{\bm{A}}$};
+    \node at (TAD) [left] {$\mathcal{T}_{\bm{A}_{\mathcal{D}}}$};
+    \node at (TAS) [left] {$\mathcal{T}_{\bm{A}_{\mathcal{S}}}$};
+    \node at (SD) [right] {$\mathcal{S}_{\mathcal{D}}$};
+    \node at (S) [right] {$\mathcal{S}$};
+
+    \fill[black] (TA) circle (2pt);
+    \fill[black] (TAD) circle (2pt);
+    \fill[black] (TAS) circle (2pt);
+    \fill[black] (SD) circle (2pt);
+    \fill[black] (mid) circle (2pt);
+    \fill[black] (S) circle (2pt);
+
+    \draw (TA) -- (TAD);
+    \draw (TAD) -- (TAS);
+    \draw (TAD) -- (SD);
+    \draw (TAS) -- (mid);
+    \draw (SD) -- (mid);
+    \draw (mid) -- (S);
+  \end{tikzpicture}
+  \caption{\label{fig:translation_subgroup}Group-subgroup diagram of translation subgroups derived from spin space group.}
+\end{figure}
+
+We write the primitive basis vectors of $\mathcal{T}(\mathcal{D})$ as $\bm{A}_{\mathcal{D}}$.
+First, we search for $\mathcal{T}(\mathcal{D}) = \mathcal{T}_{\bm{A}_{\mathcal{D}}} = \set{ (\bm{E}, \bm{v}) }{ (\bm{E}, (\bm{E}, \bm{v})) \in \mathcal{G} }$.
+The group-subgroup relationships of translation subgroups are shown in Fig.~\ref{fig:translation_subgroup}.
+The two basis vectors $\bm{A}$ and $\bm{A}_{\mathcal{S}}$ are related by an integer matrix as
+\begin{align}
+  \bm{A} = \bm{A}_{\mathcal{S}} \bm{U} \quad (\bm{U} \in \mathbb{Z}^{3 \times 3}).
+\end{align}
+Since $\mathcal{T}_{\bm{A}_{\mathcal{D}}}$ is a subgroup of $\mathcal{T}_{\bm{A}_{\mathcal{S}}}$, we only need to check finite coset representatives of $\mathcal{T}_{\bm{A}} / \mathcal{T}_{\bm{A}_{\mathcal{S}}}$ \footnote{
+  The transformation matrix $\bm{U}$ can be calculated from centerings in $\mathcal{T}_{\bm{A}_{\mathcal{D}}} / \mathcal{T}_{\bm{A}_{\mathcal{S}}}$ and basis vectors of $\bm{A}_{\mathcal{S}}$.
+  Primitive basis vectors of $\mathcal{T}_{\bm{A}_{\mathcal{D}}}$ can be taken from three nonzero vectors from the Hermite normal from of a matrix formed by these centerings and basis vectors of $\bm{A}_{\mathcal{S}}$.
+}.
+We can find translations in $\mathcal{T}_{\bm{A}_{\mathcal{D}}}$ as
+\begin{align}
+  \mathcal{T}_{\bm{A}_{\mathcal{S}}}
+    &= \set{
+      \left( \bm{E}, \overline{ \bm{t} }^{\mathcal{S}} \right)_{ \bm{A}_{\mathcal{S}} }
+      }{
+        \begin{array}{l}
+          \exists \sigma \in \mathfrak{S}_{N}, \forall i, \\
+          \bm{x}_{i} + \bm{U}^{-1} \overline{ \bm{t} }^{\mathcal{S}} \equiv \bm{x}_{\sigma(i)} \quad (\mathrm{mod}\, 1) \\
+          t_{i} = t_{\sigma(i)} \\
+          \bm{m}_{i} = \bm{m}_{\sigma(i)}
+        \end{array}
+      }
+      \times \mathcal{T}_{\bm{A}_{\mathcal{D}}}.
+\end{align}
+Then, we take one of primitive basis vectors $\bm{A}_{\mathcal{D}}$ of with
+\begin{align}
+  \bm{A}_{\mathcal{D}}
+    &= \bm{A}_{\mathcal{S}} \bm{V} \quad (\bm{V} \in \mathbb{Z}^{3 \times 3}).
+\end{align}
+
+\subsection{Spin translation group search}
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \coordinate (Pso) at (0, 0);
+    \coordinate (PsoTAD) at (0, 2);
+    \coordinate (PsoTAS) at (0, 4);
+    \coordinate (Gst) at (2, 3);
+    \coordinate (mid) at (2, 5);
+    \coordinate (O3TAS) at (4, 6);
+
+    \node at (Pso) [left] {$\mathcal{P}_{\mathrm{so}}$};
+    \node at (PsoTAD) [left] {$\mathcal{P}_{\mathrm{so}} \times \mathcal{T}_{\bm{A}_{\mathcal{D}}}$};
+    \node at (PsoTAS) [left] {$\mathcal{P}_{\mathrm{so}} \times \mathcal{T}_{\bm{A}_{\mathcal{S}}}$};
+    \node at (Gst) [right] {$\mathcal{G}_{\mathrm{st}}$};
+    \node at (O3TAS) [above] {$\mathrm{O}(3) \times \mathcal{T}_{\bm{A}_{\mathcal{S}}}$};
+
+    \fill[black] (Pso) circle (2pt);
+    \fill[black] (PsoTAD) circle (2pt);
+    \fill[black] (PsoTAS) circle (2pt);
+    \fill[black] (Gst) circle (2pt);
+    \fill[black] (mid) circle (2pt);
+    \fill[black] (O3TAS) circle (2pt);
+
+    \draw (Pso) -- (PsoTAD);
+    \draw (PsoTAD) -- (PsoTAS);
+    \draw (PsoTAD) -- (Gst);
+    \draw (Gst) -- (mid);
+    \draw (PsoTAS) -- (mid);
+    \draw (mid) -- (O3TAS);
+  \end{tikzpicture}
+  \caption{\label{fig:spin_translation_group}Group-subgroup diagram of spin translation group.}
+\end{figure}
+
+For coset representatives $(\bm{E}, \bm{v}) \mathcal{T}_{\bm{A}_{\mathcal{D}}} \in \mathcal{T}_{\bm{A}_{\mathcal{S}}} / \mathcal{T}_{\bm{A}_{\mathcal{D}}}$, we search for $\bm{W}_{\bm{v}}$ by solving a Procrustes problem as shown in Appendix~\ref{appx:procrustes}.
+% Number of generators for $\{ \bm{W}_{\bm{v}} \}$ can be determined from the Smith normal form of $\bm{V}$.
+The group-subgroup relationships for the spin translation group $\mathcal{G}_{\mathrm{st}}$ are shown in Fig.~\ref{fig:spin_translation_group}.
+
+\begin{align}
+  \mathcal{G}_{\mathrm{st}}
+    &=
+      \bigsqcup_{ \overline{\bm{v}}^{\mathcal{D}} }
+      \bigsqcup_{
+        (\bm{E}, \overline{\bm{t}}^{\mathcal{D}})_{\bm{A}_{\mathcal{D}}} \mathcal{T}_{\bm{A}}
+          \in \mathcal{T}_{\bm{A}_{\mathcal{D}}} / \mathcal{T}_{\bm{A}}
+      }
+        ((\bm{E}, \overline{\bm{v}}^{\mathcal{D}})_{\bm{A}_{\mathcal{D}}}, \bm{W}_{ \overline{\bm{v}}^{\mathcal{D}} })
+        (\bm{E}, \overline{\bm{t}}^{\mathcal{D}})_{\bm{A}_{\mathcal{D}}}
+        \left(
+          \mathcal{P}_{\mathrm{so}} \times \mathcal{T}_{\bm{A}}
+        \right)
+\end{align}
+
+\subsection{Spin space group search}
+
+Some rotations in $\mathcal{P}(\mathcal{S})$ may not be compatible with $\mathcal{T}_{\bm{A}_{\mathcal{D}}}$.
+We write the subgroup of $\mathcal{S}$ which is compatible with $\mathcal{T}_{\bm{A}_{\mathcal{D}}}$ as $\mathcal{S}_{\mathcal{D}}$ and its point group as $\mathcal{P}_{\mathcal{D}}$.
+
+\begin{align}
+  \mathcal{P}_{\mathcal{D}}
+    &\coloneqq \set{
+        \bm{A}_{\mathcal{S}} \overline{\bm{R}}^{\mathcal{S}} \bm{A}_{\mathcal{S}}^{-1} \in \mathcal{P}(\mathcal{S})
+      }{
+        \bm{V}^{-1} \overline{\bm{R}}^{\mathcal{S}} \bm{V} \in \mathbb{Z}^{3 \times 3}
+      }
+\end{align}
+
+\begin{align}
+  \mathcal{S}_{\mathcal{D}}
+    &\coloneqq \bigsqcup_{
+          \overline{\bm{R}}^{\mathcal{S}} \in \bm{A}_{\mathcal{S}}^{-1} \mathcal{P}_{\mathcal{D}} \bm{A}_{\mathcal{S}}
+      } \bigsqcup_{
+          \left( \bm{E}, \overline{ \bm{t} }^{\mathcal{S}} \right)_{ \bm{A}_{\mathcal{S}} } \mathcal{T}_{\bm{A}_{\mathcal{D}}}
+          \in \mathcal{T}_{\bm{A}_{\mathcal{S}}} / \mathcal{T}_{\bm{A}_{\mathcal{D}}}
+      }
+      \left(
+        \overline{\bm{R}}^{\mathcal{S}},
+        \overline{ \bm{v} }^{\mathcal{S}}(\overline{\bm{R}}^{\mathcal{S}})
+      \right)_{ \bm{A}_{\mathcal{S}} }
+      \left( \bm{E}, \overline{ \bm{t} }^{\mathcal{S}} \right)_{ \bm{A}_{\mathcal{S}} }
+      \mathcal{T}_{\bm{A}_{\mathcal{D}}},
+\end{align}
+
+Finally, the coset decomposition of $\mathcal{G}$ by $\mathcal{G}_{\mathrm{st}}$ is finite.
+The rotation parts of the coset representatives should belong to the point group of $\mathcal{F}(\mathcal{G})$.
+The corresponding spin-rotation parts are determined by solving the Procrustes problem as well.
+\begin{align}
+  \mathcal{G}
+    = \bigsqcup_{ \bm{R} \in \mathcal{P}(\mathcal{F}(\mathcal{G})) } ((\bm{R}, \bm{v}_{\bm{R}}), \bm{W}_{\bm{R}}) \mathcal{G}_{\mathrm{st}}
+\end{align}
