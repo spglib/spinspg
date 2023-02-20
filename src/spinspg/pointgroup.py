@@ -5,6 +5,7 @@ from collections import deque
 
 import numpy as np
 from spglib import get_pointgroup
+from spgrep.group import get_cayley_table, get_identity_index
 from spgrep.pointgroup import pg_dataset
 from spgrep.utils import is_integer_array, ndarray2d_to_integer_tuple
 
@@ -1742,3 +1743,80 @@ def traverse_spin_operations(generators):
             que.append(gh)
 
     return tuple(founds)
+
+
+def get_nontrivial_spin_point_group_type(
+    prim_rotations: NDArrayInt,
+    prim_spin_rotations: NDArrayFloat,
+):
+    r"""Return nontrivial spin point group type and transformation to a representative.
+
+    When we write :math:`\mathbf{P}` = ``transformation_rot``, :math:`\mathbf{Q}` = ``transformation_spin``, :math:`\mathbf{R}_{i}` = ``prim_rotations[i]``, and :math:`\mathbf{W}_{i}` = ``prim_spin_rotations[i]``, the returned transformation :math:`(\mathbf{P}, \mathbf{Q})` transforms :math:`(\mathbf{R}_{i}, \mathbf{W}_{i})` to :math:`(\mathbf{P}^{-1} \mathbf{R}_{i} \mathbf{P}, \mathbf{Q}^{-1} \mathbf{W}_{i} \mathbf{Q})`.
+
+    Parameters
+    ----------
+    prim_rotations: array[int], (order, 3, 3)
+        Spatial rotations without duplications
+    prim_spin_rotations: array, (order, 3, 3)
+        Spin rotations
+
+    Returns
+    -------
+    litvin_number: int
+    transformation_rot: array, (3, 3)
+        Transformation matrix for spatial rotations, :math:`\mathbf{P}`
+    transformation_spin: array, (3, 3)
+        Transformation matrix for spin rotations, :math:`\mathbf{Q}`
+    """
+    # Check if prim_rotations does not have duplications
+    hashable_prim_rotations = [ndarray2d_to_integer_tuple(rot) for rot in prim_rotations]
+    if len(set(hashable_prim_rotations)) != len(hashable_prim_rotations):
+        raise ValueError("Specify prim_rotations without duplication.")
+
+    # Calculate Family spin point group, B
+    maximal_point_subgroup_indices = [
+        i for i, srot in enumerate(prim_spin_rotations) if np.allclose(srot, np.eye(3))
+    ]
+    table_R = get_cayley_table(prim_rotations)
+    family_spin_point_group_indices = _get_left_coset(table_R, maximal_point_subgroup_indices)
+    family_spin_point_group = [prim_spin_rotations[idx] for idx in family_spin_point_group_indices]
+    Q_int, family_spin_point_group_int = get_integer_point_group(family_spin_point_group)
+    symbol_B, Q0, mapping_Q0 = get_pointgroup_representative(family_spin_point_group_int)
+
+    symbol_R, P, mapping_P = get_pointgroup_representative(prim_rotations)
+    maximal_point_subgroup = prim_rotations[maximal_point_subgroup_indices]
+    symbol_r, _, _ = get_pointgroup_representative(maximal_point_subgroup)
+
+    # Look up nontrivial spin point group
+    try:
+        candidates = SPIN_POINT_GROUP_TYPES[symbol_R][symbol_r][symbol_B]  # noqa: F841
+    except KeyError:
+        raise ValueError(
+            f"Failed to search nontrivial spin point group type: R={symbol_R}, r={symbol_r}, B={symbol_B}"
+        )
+
+    # TODO
+
+
+def _get_left_coset(table, subgroup: list[int]) -> list[int]:
+    order = len(table)
+    assert order % len(subgroup) == 0
+    identity = get_identity_index(table)
+
+    founds = set()
+    representatives = []
+
+    # Choose identity as representative
+    representatives.append(identity)
+    for h in subgroup:
+        founds.add(h)
+
+    for g in range(order):
+        if g in founds:
+            continue
+        representatives.append(g)
+        for h in subgroup:
+            founds.add(table[g, h])
+
+    assert len(founds) == order
+    return representatives

@@ -6,11 +6,13 @@ from spglib import get_pointgroup, get_symmetry_from_database
 from spgrep.pointgroup import pg_dataset
 from spgrep.utils import is_integer_array
 
+from spinspg.group import get_primitive_spin_symmetry, get_symmetry_with_cell
 from spinspg.pointgroup import (
     POINT_GROUP_GENERATORS,
     POINT_GROUP_REPRESENTATIVES,
     SPIN_POINT_GROUP_TYPES,
     get_integer_point_group,
+    get_nontrivial_spin_point_group_type,
     get_pointgroup_representative,
     get_pointgroup_representative_from_symbol,
     traverse_spin_operations,
@@ -94,8 +96,22 @@ def test_get_pointgroup_representative(symbol, idx):
         assert np.allclose(ri_actual, pg_std[i])
 
 
+def test_get_nontrivial_spin_point_group_type(layer_triangular_kagome):
+    cell = layer_triangular_kagome
+    lattice, positions, numbers, magmoms = cell
+    symprec = 1e-5
+    angle_tolerance = -1
+
+    ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, angle_tolerance)
+    ssg = get_primitive_spin_symmetry(ns, magmoms, symprec)
+
+    prim_rotations = np.array([ops.rotation for ops in ssg.nontrivial_coset])
+    prim_spin_rotations = np.array([ops.spin_rotation for ops in ssg.nontrivial_coset])
+
+    get_nontrivial_spin_point_group_type(prim_rotations, prim_spin_rotations)
+
+
 def test_get_integer_point_group_3m():
-    # 3m
     cart_rotations = np.array(
         [
             np.eye(3),
