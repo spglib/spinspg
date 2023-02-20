@@ -4,7 +4,7 @@ caption: Contents
 hidden:
 ---
    Introduction <self>
-   API Reference <api.md>
+   API Reference <api/api.md>
    Change Log <changelog.md>
    Index <genindex>
 ```
