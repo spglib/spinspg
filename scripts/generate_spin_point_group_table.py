@@ -155,8 +155,8 @@ def main():
         ],
         "-3": [
             "1",
-            r"\overline{3}^{+}",
-            r"\overline{3}^{-}",
+            r"3^{+}",
+            r"3^{-}",
             r"\overline{1}",
             r"\overline{3}^{+}",
             r"\overline{3}^{-}",
@@ -257,8 +257,8 @@ def main():
             r"3^{+}",
             r"3^{-}",
             r"m_{001}",
-            r"6^{-}",
-            r"6^{+}",
+            r"\overline{6}^{-}",
+            r"\overline{6}^{+}",
             r"m_{110}",
             r"m_{100}",
             r"m_{010}",
@@ -283,8 +283,8 @@ def main():
             r"\overline{3}^{+}",
             r"\overline{3}^{-}",
             r"m_{001}",
-            r"6^{-}",
-            r"6^{+}",
+            r"\overline{6}^{-}",
+            r"\overline{6}^{+}",
             r"m_{110}",
             r"m_{100}",
             r"m_{010}",
@@ -436,10 +436,19 @@ def main():
         ],
     }
 
+    # Assert operation_labels
+    for pg_symbol, labels in operation_labels.items():
+        if len(set(labels)) != len(labels):
+            print(f"Wrong labels in {pg_symbol}")
+
     contents = []
 
     contents.append(
-        r"""\begin{longtable}{ccccc}
+        r"""\section{\label{appx:spin_point_group_table}Tabulation of nontrivial spin point group types}
+
+\newpage
+
+\begin{longtable}{ccccc}
   \caption{Nontrivial spin point group types}
   \label{tab:spin_point_group_types} \\
   \hline \hline
