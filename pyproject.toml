@@ -51,9 +51,6 @@ dev = [
     "pre-commit",
     "black",
     "mypy",
-    "flake8",
-    "pyupgrade",
-    "pydocstyle",
     "toml",
 ]
 docs = [
@@ -88,6 +85,17 @@ zip-safe = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+src = ["src", "tests", "exp"]
+line-length = 99
+ignore = [
+    "E501",
+    "W605",
+]
+exclude = [
+    'docs',
+]
 
 [tool.black]
 line-length = 99
