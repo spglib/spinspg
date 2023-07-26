@@ -6,6 +6,7 @@ hidden:
    Introduction <self>
    API Reference <api/api.md>
    Change Log <changelog.md>
+   Development <development.md>
    Index <genindex>
 ```
 

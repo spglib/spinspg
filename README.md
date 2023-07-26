@@ -48,13 +48,34 @@ print(f"Translation ({idx})\n{translations[idx]}")
 print(f"Spin rotation ({idx})\n{spin_rotations[idx]}")  # -> diag([1, 1, -1])
 ```
 
+See [API documents](docs/api/api.md) for more details.
+
 ## Installation
 
 ```shell
 git clone git@github.com:spglib/spinspg.git
 cd spinspg
-conda create -y -n spinspg python=3.10 pip
-conda activate spinspg
-pip install -e ".[dev,docs]"
-pre-commit install
+pip install .
 ```
+
+## How to cite spinspg
+
+If you use spinspg in your research, please cite the following paper:
+
+```
+@misc{spinspg,
+    author = {Kohei Shinohara and Atsushi Togo and Hikaru Watanabe and Takuya Nomoto and Isao Tanaka and Ryotaro Arita},
+    title = {Algorithm for spin symmetry operation search},
+    year = {2023},
+    eprint = {arXiv:2307.12228},
+    howpublished = {\url{https://arxiv.org/abs/2307.12228}},
+}
+```
+
+## Change log
+
+See the [change log](docs/changelog.md) for recent changes.
+
+## License
+
+Spinspg is distributed under a BSD 3-clause license.

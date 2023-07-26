@@ -66,7 +66,7 @@ napoleon_use_rtype = True
 napoleon_use_ivar = True
 
 intersphinx_mapping = {
-    "spglib": ("https://spglib.github.io/spglib/", None),
+    "spglib": ("https://spglib.readthedocs.io/en/latest/", None),
 }
 
 # MyST

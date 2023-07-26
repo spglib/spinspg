@@ -25,7 +25,3 @@
 ```{eval-rst}
     .. autofunction:: spinspg.pointgroup.get_pointgroup_representative
 ```
-
-```{eval-rst}
-    .. autofunction:: spinspg.pointgroup.get_nontrivial_spin_point_group_type
-```
