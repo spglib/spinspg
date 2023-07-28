@@ -48,6 +48,7 @@ repository = "https://github.com/spglib/spinspg"
 dev = [
     "spgrep-modulation>=0.2.5",
     "pytest==7.2.0",
+    "pytest-cov",
     "pre-commit",
     "black",
     "mypy",

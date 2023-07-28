@@ -1,12 +1,14 @@
 # spinspg
 [![testing](https://github.com/spglib/spinspg/actions/workflows/testing.yml/badge.svg)](https://github.com/spglib/spinspg/actions/workflows/testing.yml)
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-
+[![PyPI version](https://badge.fury.io/py/spinspg.svg)](https://badge.fury.io/py/spinspg)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/spinspg)
 
 Python package for detecting spin space group on top of spglib
 
 - Document(latest): <https://spinspg.readthedocs.io/en/latest/>
 - GitHub: <https://github.com/spglib/spinspg>
+- PyPI: <https://pypi.org/project/spinspg/>
 
 ## Features
 

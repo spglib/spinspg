@@ -154,3 +154,4 @@ docs_build/
 spin_point_group_table.tex
 
 .DS_Store
+codecov
