@@ -54,6 +54,7 @@ dev = [
     "toml",
 ]
 docs = [
+    "importlib-metadata",
     "sphinx",
     "sphinx-autobuild",
     "myst-parser",
