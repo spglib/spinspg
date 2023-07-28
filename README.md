@@ -1,6 +1,11 @@
 # spinspg
+[![testing](https://github.com/spglib/spinspg/actions/workflows/testing.yml/badge.svg)](https://github.com/spglib/spinspg/actions/workflows/testing.yml)
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
+
 Python package for detecting spin space group on top of spglib
 
+- Document(latest): <https://spinspg.readthedocs.io/en/latest/>
 - GitHub: <https://github.com/spglib/spinspg>
 
 ## Features
@@ -60,7 +65,7 @@ pip install .
 
 ## How to cite spinspg
 
-If you use spinspg in your research, please cite the following paper:
+If you use spinspg in your research, please cite [Spglib](https://spglib.readthedocs.io/en/latest/) and the following paper:
 
 ```
 @misc{spinspg,
