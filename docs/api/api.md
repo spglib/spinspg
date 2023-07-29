@@ -14,6 +14,7 @@
 
 ```{eval-rst}
     .. autoclass:: spinspg.spin.SpinOnlyGroup
+        :members:
 ```
 
 ## Nontrivial spin point group

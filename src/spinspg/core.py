@@ -19,6 +19,7 @@ def get_spin_symmetry(
     """Return spin symmetry operations of a given spin arrangement.
 
     See :ref:`Spglib's document <spglib:py_variables_crystal_structure>` for how to specify the spin arrangement by ``lattice``, ``positions``, ``numbers``, and ``magmoms`` in details.
+    With the returned spin symmetry operations, the ``i``-th spin symmetry operation maps point coordinates ``x`` to ``rotations[i] @ x + translations[i]`` and magnetic moment ``m`` to ``spin_rotations[i] @ m``.
 
     Parameters
     ----------
@@ -38,12 +39,14 @@ def get_spin_symmetry(
     Returns
     -------
     spin_only_group: :class:`spin.SpinOnlyGroup`
+        Spin-only group, which preserve the given spin arrangement with identity spatial operation.
     rotations: array[int], (num_sym, 3, 3)
         Rotation parts of spin symmetry operations w.r.t. ``lattice``.
     translations: array, (num_sym, 3)
         Translation parts of spin symmetry operations w.r.t. ``lattice``.
     spin_rotations: array, (num_sym, 3, 3)
         Spin rotation parts of spin symmetry operations in Cartesian coordinates.
+
     """
     ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, angle_tolerance)
     ssg = get_primitive_spin_symmetry(ns, magmoms, symprec)

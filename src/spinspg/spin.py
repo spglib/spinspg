@@ -27,6 +27,8 @@ class SpinOnlyGroupType(Enum):
 class SpinOnlyGroup:
     """Spin only group.
 
+    This class represents one of nonmagnetic, collinear, coplanar, and non-coplanar spin-only groups.
+
     Attributes
     ----------
     spin_only_group_type: :class:`spin.SpinOnlyGroupType`
@@ -85,22 +87,22 @@ class SpinOnlyGroup:
 
     @classmethod
     def nonmagnetic(cls) -> SpinOnlyGroup:
-        """Return nonmagnetic spin-only group."""
+        """Instantiate nonmagnetic spin-only group."""
         return SpinOnlyGroup(SpinOnlyGroupType.NONMAGNETIC, None)
 
     @classmethod
     def collinear(cls, axis: NDArrayFloat) -> SpinOnlyGroup:
-        """Return collinear spin-only group with the parallel axis."""
+        """Instantiate collinear spin-only group with the parallel axis."""
         return SpinOnlyGroup(SpinOnlyGroupType.COLLINEAR, axis)
 
     @classmethod
     def coplanar(cls, axis: NDArrayFloat) -> SpinOnlyGroup:
-        """Return coplanar spin-only group with the perpendicular axis."""
+        """Instantiate coplanar spin-only group with the perpendicular axis."""
         return SpinOnlyGroup(SpinOnlyGroupType.COPLANAR, axis)
 
     @classmethod
     def noncoplanar(cls) -> SpinOnlyGroup:
-        """Return noncoplanar spin-only group."""
+        """Instantiate noncoplanar spin-only group."""
         return SpinOnlyGroup(SpinOnlyGroupType.NONCOPLANAR, None)
 
 

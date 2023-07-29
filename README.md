@@ -4,7 +4,7 @@
 [![PyPI version](https://badge.fury.io/py/spinspg.svg)](https://badge.fury.io/py/spinspg)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/spinspg)
 
-Python package for detecting spin space group on top of spglib
+`spinspg` is a Python package for detecting spin space group on top of `spglib`
 
 - Document(latest): <https://spinspg.readthedocs.io/en/latest/>
 - GitHub: <https://github.com/spglib/spinspg>
@@ -15,6 +15,9 @@ Python package for detecting spin space group on top of spglib
 - Find spin symmetry operations from spin arrangements
 
 ## Usage
+
+{func}`spinspg.get_spin_symmetry` returns spin symmetry operations of a given spin arrangement, analogous to Spglib's {ref}`spglib:py_get_magnetic_symmetry` for magnetic symmetry operations.
+For comprehensive output details, refer to [API documents](docs/api/api.md).
 
 ```python
 import numpy as np
@@ -55,19 +58,15 @@ print(f"Translation ({idx})\n{translations[idx]}")
 print(f"Spin rotation ({idx})\n{spin_rotations[idx]}")  # -> diag([1, 1, -1])
 ```
 
-See [API documents](docs/api/api.md) for more details.
-
 ## Installation
 
 ```shell
-git clone git@github.com:spglib/spinspg.git
-cd spinspg
-pip install .
+pip install spinspg
 ```
 
 ## How to cite spinspg
 
-If you use spinspg in your research, please cite [Spglib](https://spglib.readthedocs.io/en/latest/) and the following paper:
+If you use `spinspg` in your research, please cite both [Spglib](https://spglib.readthedocs.io/en/latest/) and the subsequent paper:
 
 ```
 @misc{spinspg,
@@ -85,4 +84,4 @@ See the [change log](docs/changelog.md) for recent changes.
 
 ## License
 
-Spinspg is distributed under a BSD 3-clause license.
+`spinspg` is released under a BSD 3-clause license.

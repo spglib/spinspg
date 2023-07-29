@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.1.2 (28 Jul. 2023)
+
+- First release version
+
 ## v0.1.1 (20 Feb. 2023)
 - Fix spin symmetry search and add table of nontrivial spin point-group types [[#2]](https://github.com/spglib/spinspg/pull/2)
     - Tabulate 598 spin point group types
