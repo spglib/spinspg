@@ -69,13 +69,19 @@ pip install spinspg
 If you use `spinspg` in your research, please cite both [Spglib](https://spglib.readthedocs.io/en/latest/) and the subsequent paper:
 
 ```
-@misc{spinspg,
-    author = {Kohei Shinohara and Atsushi Togo and Hikaru Watanabe and Takuya Nomoto and Isao Tanaka and Ryotaro Arita},
-    title = {Algorithm for spin symmetry operation search},
-    year = {2023},
-    eprint = {arXiv:2307.12228},
-    howpublished = {\url{https://arxiv.org/abs/2307.12228}},
+@article{spinspg,
+    author = "Shinohara, Kohei and Togo, Atsushi and Watanabe, Hikaru and Nomoto, Takuya and Tanaka, Isao and Arita, Ryotaro",
+    title = "{Algorithm for spin symmetry operation search}",
+    journal = "Acta Cryst. A",
+    year = "2024",
+    volume = "80",
+    number = "1",
+    pages = "94--103",
+    month = "Jan",
+    doi = {10.1107/S2053273323009257},
+    url = {https://doi.org/10.1107/S2053273323009257},
 }
+
 ```
 
 ## Change log
