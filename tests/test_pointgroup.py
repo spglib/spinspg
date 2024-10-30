@@ -121,7 +121,7 @@ def test_get_integer_point_group_3m():
                 [0, 0, 1],
             ],
         ],
-        dtype=np.float_,
+        dtype=np.float64,
     )
     P, rotations = get_integer_point_group(cart_rotations)
 

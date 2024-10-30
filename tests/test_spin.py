@@ -11,7 +11,7 @@ def nonmagnetic():
             [0, 0, 0],
             [0, 0, 0],
         ],
-        dtype=np.float_,
+        dtype=np.float64,
     )
     return magmoms_nonmagnetic
 
@@ -23,7 +23,7 @@ def collinear():
             [0, 0, 1],
             [0, 0, -2],
         ],
-        dtype=np.float_,
+        dtype=np.float64,
     )
     return magmoms_collinear
 
@@ -35,7 +35,7 @@ def coplanar():
             [0, 0, 1],
             [0, 1, 0],
         ],
-        dtype=np.float_,
+        dtype=np.float64,
     )
     return magmoms_coplanar
 
@@ -48,7 +48,7 @@ def noncoplanar():
             [0, 1, 0],
             [0, 0, 1],
         ],
-        dtype=np.float_,
+        dtype=np.float64,
     )
     return magmoms_noncoplanar
 

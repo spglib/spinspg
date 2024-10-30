@@ -238,7 +238,7 @@ def get_primitive_spin_symmetry(
         W = solve_procrustes(new_magmoms, perm_magmoms)
         if spin_only_group.contain(W):
             # Chose W as identify if W belongs to the spin only group
-            W = np.eye(3, dtype=np.float_)
+            W = np.eye(3, dtype=np.float64)
 
         new_magmoms = new_magmoms @ W.T
         if np.max(np.linalg.norm(new_magmoms - perm_magmoms, axis=1)) < mag_symprec:
@@ -276,7 +276,7 @@ def get_primitive_spin_symmetry(
             W = solve_procrustes(new_magmoms, perm_magmoms)
             if spin_only_group.contain(W):
                 # Chose W as identify if W belongs to the spin only group
-                W = np.eye(3, dtype=np.float_)
+                W = np.eye(3, dtype=np.float64)
 
             new_magmoms = new_magmoms @ W.T
             if np.max(np.linalg.norm(new_magmoms - perm_magmoms, axis=1)) < mag_symprec:

@@ -8,7 +8,7 @@ from numpy.typing import NDArray
 from typing_extensions import TypeAlias  # for Python<3.10
 
 NDArrayInt: TypeAlias = NDArray[np.int_]
-NDArrayFloat: TypeAlias = NDArray[np.float_]
+NDArrayFloat: TypeAlias = NDArray[np.float64]
 
 
 def ndarray2d_to_integer_tuple(array: NDArrayFloat) -> tuple[tuple[Any]]:
