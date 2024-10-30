@@ -1,6 +1,6 @@
 # Change Log
 
-## v0.1.3 (30 Oct. 2024)
+## v0.1.4 (30 Oct. 2024)
 
 - Drop support for Python 3.8
 - Fix typo in scripts/generate_spin_point_group_table.py by @janpriessnitz
