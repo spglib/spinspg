@@ -1,11 +1,16 @@
 """Core APIs."""
+
 from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from spinspg.group import get_primitive_spin_symmetry, get_symmetry_with_cell
-from spinspg.spin import SpinOnlyGroup
-from spinspg.utils import NDArrayFloat, NDArrayInt
+
+if TYPE_CHECKING:
+    from spinspg.spin import SpinOnlyGroup
+    from spinspg.utils import NDArrayFloat, NDArrayInt
 
 
 def get_spin_symmetry(

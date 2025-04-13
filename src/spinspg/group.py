@@ -1,4 +1,5 @@
 """Group for spin symmetry operations."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -8,7 +9,7 @@ from hsnf import column_style_hermite_normal_form
 from spglib import get_symmetry_dataset
 
 from spinspg.permutation import Permutation, get_symmetry_permutations
-from spinspg.spin import SpinOnlyGroup, get_spin_only_group, solve_procrustes
+from spinspg.spin import SpinOnlyGroup, SpinOnlyGroupType, get_spin_only_group, solve_procrustes
 from spinspg.utils import (
     NDArrayFloat,
     NDArrayInt,
@@ -57,9 +58,9 @@ def get_symmetry_with_cell(
 ) -> NonmagneticSymmetry:
     """Find spatial symmetry operations from nonmagnetic crystal structure."""
     dataset = get_symmetry_dataset((lattice, positions, numbers), symprec, angle_tolerance)
-    rotations = dataset["rotations"]
-    translations = dataset["translations"]
-    prim_lattice = dataset["primitive_lattice"]
+    rotations = dataset.rotations
+    translations = dataset.translations
+    prim_lattice = dataset.primitive_lattice
 
     # Unique by rotation parts
     uniq_rotations = []
@@ -236,9 +237,7 @@ def get_primitive_spin_symmetry(
         new_magmoms = magmoms.copy()
         perm_magmoms = magmoms[perm.permutation]
         W = solve_procrustes(new_magmoms, perm_magmoms)
-        if spin_only_group.contain(W):
-            # Chose W as identify if W belongs to the spin only group
-            W = np.eye(3, dtype=np.float64)
+        W = purify_spin_rotation(W, spin_only_group)
 
         new_magmoms = new_magmoms @ W.T
         if np.max(np.linalg.norm(new_magmoms - perm_magmoms, axis=1)) < mag_symprec:
@@ -274,9 +273,7 @@ def get_primitive_spin_symmetry(
             new_magmoms = magmoms.copy()
             perm_magmoms = magmoms[new_perm.permutation]
             W = solve_procrustes(new_magmoms, perm_magmoms)
-            if spin_only_group.contain(W):
-                # Chose W as identify if W belongs to the spin only group
-                W = np.eye(3, dtype=np.float64)
+            W = purify_spin_rotation(W, spin_only_group)
 
             new_magmoms = new_magmoms @ W.T
             if np.max(np.linalg.norm(new_magmoms - perm_magmoms, axis=1)) < mag_symprec:
@@ -302,3 +299,38 @@ def get_primitive_spin_symmetry(
         nontrivial_coset=nontrivial_coset,
         transformation=transformation,
     )
+
+
+def purify_spin_rotation(
+    W: NDArrayFloat, spin_only_group: SpinOnlyGroup, atol: float = 1e-5
+) -> NDArrayFloat:
+    """Purify spin rotation matrix `W` by eliminating the spin-only group part."""
+    identity = np.eye(3, dtype=np.float64)
+    if spin_only_group.spin_only_group_type == SpinOnlyGroupType.NONMAGNETIC:
+        # spin_only_group = O(3): All spin rotations are equivalent to identity
+        return identity
+    elif spin_only_group.spin_only_group_type == SpinOnlyGroupType.COLLINEAR:
+        # normalizer of spin_only_group: infty/mm = (infty m) x m (ITA Table 3.5.4.2)
+        axis = spin_only_group.axis
+        assert isinstance(axis, np.ndarray)
+        if np.allclose(W @ axis, axis, atol=atol):
+            return identity
+        elif np.allclose(W @ axis, -axis, atol=atol):
+            # mirror along axis
+            return _get_mirror_along_axis(axis)
+        else:
+            raise ValueError("Given spin rotation does not normalize the spin-only group.")
+    elif spin_only_group.spin_only_group_type == SpinOnlyGroupType.COPLANAR:
+        # normalizer of spin_only_group: infty/mm
+        mirror = _get_mirror_along_axis(spin_only_group.axis)
+        if np.linalg.det(W) > 0:
+            return W
+        else:
+            return W @ mirror
+    elif spin_only_group.spin_only_group_type == SpinOnlyGroupType.NONCOPLANAR:
+        return W
+
+
+def _get_mirror_along_axis(axis: NDArrayFloat) -> NDArrayFloat:
+    """Return mirror matrix along the given axis."""
+    return np.eye(3, dtype=np.float64) - 2 * axis[:, None] @ axis[None, :]

@@ -1,4 +1,5 @@
 """Import top APIs and version."""
+
 from importlib.metadata import PackageNotFoundError, version
 
 from spinspg.core import get_spin_symmetry  # noqa: F401
