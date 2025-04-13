@@ -1,4 +1,5 @@
 """Spin point group."""
+
 from __future__ import annotations
 
 from collections import deque
@@ -1505,7 +1506,7 @@ POINT_GROUP_TABLES = {
 def get_integer_point_group(prim_rotations: NDArrayFloat) -> tuple[NDArrayFloat, NDArrayInt]:
     """Transform subgroup of orthgonal group O(3) to integer matrices.
 
-    Implement algorithm presented in "R. W. Grosse-Kunstleve. Algorithms for deriving crystallographic space-group information. Acta Cryst. A, 55, 383–395 (1999)".
+    Implement algorithm presented in "R. W. Grosse-Kunstleve. Algorithms for deriving crystallographic space-group information. Acta Cryst. A, 55, 383-395 (1999)".
 
     Parameters
     ----------

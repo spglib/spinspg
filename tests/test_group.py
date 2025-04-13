@@ -3,8 +3,9 @@ import pytest
 from spglib import get_magnetic_symmetry
 
 from spinspg.core import get_spin_symmetry
-from spinspg.group import get_primitive_spin_symmetry, get_symmetry_with_cell
-from spinspg.spin import SpinOnlyGroupType
+from spinspg.group import get_primitive_spin_symmetry, get_symmetry_with_cell, purify_spin_rotation
+from spinspg.spin import SpinOnlyGroup, SpinOnlyGroupType
+from spinspg.utils import NDArrayFloat
 
 
 def test_get_symmetry_with_cell(fcc):
@@ -209,3 +210,53 @@ def test_get_spin_symmetry(rutile):
                 found[i] = True
 
     assert all(found)
+
+
+@pytest.mark.parametrize(
+    "W,spin_only_group,expect",
+    [
+        (np.diag([1, -1, -1]), SpinOnlyGroup.nonmagnetic(), np.eye(3)),
+        (
+            np.array(
+                [
+                    [0, -1, 0],
+                    [1, 0, 0],
+                    [0, 0, 1],
+                ]
+            ),  # rotation by 90 degree around spin axis
+            SpinOnlyGroup.collinear(np.array([0, 0, 1])),
+            np.eye(3),
+        ),
+        (
+            np.array(
+                [
+                    [0, -1, 0],
+                    [1, 0, 0],
+                    [0, 0, -1],
+                ]
+            ),  # rotorotation by 90 degree around spin axis
+            SpinOnlyGroup.collinear(np.array([0, 0, 1])),
+            np.diag([1, 1, -1]),
+        ),
+        (
+            np.diag([1, 1, -1]),  # mirror perpendicular to spin axis
+            SpinOnlyGroup.coplanar(np.array([0, 0, 1])),
+            np.eye(3),
+        ),
+        (
+            np.diag([1, -1, -1]),  # mirror perpendicular to spin axis
+            SpinOnlyGroup.coplanar(np.array([0, 0, 1])),
+            np.diag([1, -1, -1]),
+        ),
+        (
+            np.diag([-1, -1, -1]),
+            SpinOnlyGroup.noncoplanar(),
+            np.diag([-1, -1, -1]),
+        ),
+    ],
+)
+def test_purify_spin_rotation(
+    W: NDArrayFloat, spin_only_group: SpinOnlyGroup, expect: NDArrayFloat
+):
+    actual = purify_spin_rotation(W, spin_only_group)
+    assert np.allclose(actual, expect)

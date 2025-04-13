@@ -1,9 +1,11 @@
 """Permutations from action of symmetry operation on sites."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
 
 import numpy as np
+from typing_extensions import Self
 
 from spinspg.utils import NDArrayFloat, NDArrayInt
 
@@ -18,7 +20,7 @@ class Permutation:
         """Return a permuted index of ``idx``."""
         return self.permutation[idx]
 
-    def __mul__(self, rhs: Permutation) -> Permutation:
+    def __mul__(self, rhs: Self) -> Permutation:
         """Return product with a given permutation ``rhs``.
 
         (self * rhs)(i) = self(rhs(i))
