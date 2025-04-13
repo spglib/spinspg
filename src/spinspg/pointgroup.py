@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import deque
+from typing import TYPE_CHECKING
 
 import numpy as np
 from spglib import get_pointgroup
@@ -10,7 +11,9 @@ from spgrep.pointgroup import pg_dataset
 from spgrep.utils import is_integer_array, ndarray2d_to_integer_tuple
 
 from spinspg.permutation import Permutation
-from spinspg.utils import NDArrayFloat, NDArrayInt
+
+if TYPE_CHECKING:
+    from spinspg.utils import NDArrayFloat, NDArrayInt
 
 # Representatives for a geometric crystal class. The first descriptions are chosen for "-42m", "32", "3m", "-3m" and "-6m2".
 # Choose unique axis c for "mm2".

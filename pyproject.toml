@@ -100,6 +100,7 @@ extend-select = [
     "E",           # pycodestyle-errors
     "I",           # isort
     "UP",          # pyupgrade
+    "TC",
 ]
 ignore = [
     "E501",

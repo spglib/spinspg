@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import numpy as np
 from typing_extensions import Self
 
-from spinspg.utils import NDArrayFloat, NDArrayInt
+if TYPE_CHECKING:
+    from spinspg.utils import NDArrayFloat, NDArrayInt
 
 
 @dataclass

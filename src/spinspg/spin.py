@@ -4,12 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum, auto
+from typing import TYPE_CHECKING
 
 import numpy as np
 from spgrep.spinor import get_rotation_angle_and_axis
 from typing_extensions import Self
 
-from spinspg.utils import NDArrayFloat
+if TYPE_CHECKING:
+    from spinspg.utils import NDArrayFloat
 
 
 class SpinOnlyGroupType(Enum):
