@@ -1,4 +1,5 @@
 """Group for spin symmetry operations."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
