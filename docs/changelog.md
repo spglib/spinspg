@@ -1,5 +1,12 @@
 # Change Log
 
+## v0.2.0 (5 Oct. 2025)
+
+- Drop support for Python 3.9
+- Fix collinear case with almost-zero magnetic moments
+- Eliminate spin rotations from spin-only group
+
+
 ## v0.1.5 (30 Oct. 2024)
 
 - Drop support for Python 3.8
