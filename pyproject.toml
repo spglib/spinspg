@@ -13,7 +13,7 @@ description = "Python package for detecting spin space group on top of spglib"
 authors = [
     {name = "Kohei Shinohara", email = "kshinohara0508@gmail.com"},
 ]
-requires-python = ">=3.9.0"
+requires-python = ">=3.10.0"
 license = {file = "LICENSE"}
 classifiers = [
     # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -22,10 +22,10 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Mathematics",
     "Topic :: Scientific/Engineering :: Physics",
 ]
@@ -45,14 +45,10 @@ homepage = "https://github.com/spglib/spinspg"
 repository = "https://github.com/spglib/spinspg"
 
 [project.optional-dependencies]
-dev = [
-    "spgrep-modulation>=0.2.5",
+testing = [
     "pytest",
     "pytest-cov",
     "pre-commit",
-    "black",
-    "mypy",
-    "toml",
 ]
 docs = [
     "importlib-metadata",
@@ -63,6 +59,15 @@ docs = [
     "linkify-it-py",
     "enum-tools[sphinx]",
 ]
+dev = [
+    "spinspg[testing]",
+    "spinspg[docs]",
+    "spgrep-modulation>=0.2.5",
+    "toml",
+]
+
+[dependency-groups]
+dev = [ "spinspg[dev]" ]
 
 ###############################################################################
 # Setuptools
@@ -70,13 +75,6 @@ docs = [
 
 [tool.setuptools]
 zip-safe = false
-
-# packages = find
-# package-dir = {"" = "src"}
-#
-# [tool.setuptools.packages.find]
-# where = ["src"]
-# include = ["spinspg"]
 
 ###############################################################################
 # Other tools
