@@ -319,7 +319,8 @@ def purify_spin_rotation(
             # mirror along axis
             return _get_mirror_along_axis(axis)
         else:
-            raise ValueError("Given spin rotation does not normalize the spin-only group.")
+            # Tiny magnetic moment fluctuation may cause this case
+            return W
     elif spin_only_group.spin_only_group_type == SpinOnlyGroupType.COPLANAR:
         # normalizer of spin_only_group: infty/mm
         mirror = _get_mirror_along_axis(spin_only_group.axis)
