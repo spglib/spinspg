@@ -45,14 +45,10 @@ homepage = "https://github.com/spglib/spinspg"
 repository = "https://github.com/spglib/spinspg"
 
 [project.optional-dependencies]
-dev = [
-    "spgrep-modulation>=0.2.5",
+testing = [
     "pytest",
     "pytest-cov",
     "pre-commit",
-    "black",
-    "mypy",
-    "toml",
 ]
 docs = [
     "importlib-metadata",
@@ -63,6 +59,15 @@ docs = [
     "linkify-it-py",
     "enum-tools[sphinx]",
 ]
+dev = [
+    "spinspg[testing]",
+    "spinspg[docs]",
+    "spgrep-modulation>=0.2.5",
+    "toml",
+]
+
+[dependency-groups]
+dev = [ "spinspg[dev]" ]
 
 ###############################################################################
 # Setuptools
@@ -70,13 +75,6 @@ docs = [
 
 [tool.setuptools]
 zip-safe = false
-
-# packages = find
-# package-dir = {"" = "src"}
-#
-# [tool.setuptools.packages.find]
-# where = ["src"]
-# include = ["spinspg"]
 
 ###############################################################################
 # Other tools
