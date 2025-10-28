@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.3.0 (28 Oct. 2025)
+
+- Add moyopy backend support for symmetry search
+
 ## v0.2.0 (5 Oct. 2025)
 
 - Drop support for Python 3.9
