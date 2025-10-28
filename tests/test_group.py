@@ -3,32 +3,40 @@ import pytest
 from spglib import get_magnetic_symmetry
 
 from spinspg.core import get_spin_symmetry
-from spinspg.group import get_primitive_spin_symmetry, get_symmetry_with_cell, purify_spin_rotation
+from spinspg.group import (
+    SYMMETRY_FINDER_BACKEND,
+    get_primitive_spin_symmetry,
+    get_symmetry_with_cell,
+    purify_spin_rotation,
+)
 from spinspg.spin import SpinOnlyGroup, SpinOnlyGroupType
 from spinspg.utils import NDArrayFloat
 
 
-def test_get_symmetry_with_cell(fcc):
+@pytest.mark.parametrize("backend", ["spglib", "moyopy"])
+def test_get_symmetry_with_cell(fcc, backend: SYMMETRY_FINDER_BACKEND):
     lattice, positions, numbers, _ = fcc
-    symmetry = get_symmetry_with_cell(lattice, positions, numbers, 1e-5, -1)
+    symmetry = get_symmetry_with_cell(lattice, positions, numbers, 1e-5, -1, backend=backend)
     assert symmetry.prim_rotations.shape == (48, 3, 3)
     assert symmetry.prim_centerings.shape == (4, 3)
 
 
-def test_spin_space_group_fcc(fcc):
+@pytest.mark.parametrize("backend", ["spglib", "moyopy"])
+def test_spin_space_group_fcc(fcc, backend: SYMMETRY_FINDER_BACKEND):
     lattice, positions, numbers, magmoms = fcc
     symprec = 1e-5
-    ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, -1)
+    ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, -1, backend=backend)
     ssg = get_primitive_spin_symmetry(ns, magmoms, symprec)
 
     assert ssg.spin_only_group.spin_only_group_type == SpinOnlyGroupType.COPLANAR
     assert len(ssg.spin_translation_coset) == 2
 
 
-def test_spin_space_group_kagome(layer_triangular_kagome):
+@pytest.mark.parametrize("backend", ["spglib", "moyopy"])
+def test_spin_space_group_kagome(layer_triangular_kagome, backend: SYMMETRY_FINDER_BACKEND):
     lattice, positions, numbers, magmoms = layer_triangular_kagome
     symprec = 1e-5
-    ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, -1)
+    ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, -1, backend=backend)
     ssg = get_primitive_spin_symmetry(ns, magmoms, symprec)
 
     assert ssg.spin_only_group.spin_only_group_type == SpinOnlyGroupType.COPLANAR
@@ -42,10 +50,11 @@ def test_spin_space_group_kagome(layer_triangular_kagome):
     assert len(ssg.nontrivial_coset) == 24  # 6/mmm
 
 
-def test_spin_space_group_rutile(rutile):
+@pytest.mark.parametrize("backend", ["spglib", "moyopy"])
+def test_spin_space_group_rutile(rutile, backend: SYMMETRY_FINDER_BACKEND):
     lattice, positions, numbers, magmoms = rutile
     symprec = 1e-5
-    ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, -1)
+    ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, -1, backend=backend)
     ssg = get_primitive_spin_symmetry(ns, magmoms, symprec)
 
     assert ssg.spin_only_group.spin_only_group_type == SpinOnlyGroupType.COLLINEAR
@@ -72,10 +81,13 @@ def test_spin_space_group_rutile(rutile):
         ("Ni_in_NiTa2O6", SpinOnlyGroupType.COLLINEAR, [1, -1, 0]),
     ],
 )
-def test_spin_space_groups(request, testcase, spin_only_group_type, axis):
+@pytest.mark.parametrize("backend", ["spglib", "moyopy"])
+def test_spin_space_groups(
+    request, testcase, spin_only_group_type, axis, backend: SYMMETRY_FINDER_BACKEND
+):
     lattice, positions, numbers, magmoms = request.getfixturevalue(testcase)
     symprec = 1e-5
-    ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, -1)
+    ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, -1, backend=backend)
     ssg = get_primitive_spin_symmetry(ns, magmoms, symprec)
 
     assert ssg.spin_only_group.spin_only_group_type == spin_only_group_type
@@ -90,10 +102,11 @@ def test_spin_space_groups(request, testcase, spin_only_group_type, axis):
     assert num_sym >= len(mag_symmetry["rotations"])
 
 
-def test_get_spin_symmetry(rutile):
+@pytest.mark.parametrize("backend", ["spglib", "moyopy"])
+def test_get_spin_symmetry(rutile, backend: SYMMETRY_FINDER_BACKEND):
     lattice, positions, numbers, magmoms = rutile
     sog, rotations, translations, spin_rotations = get_spin_symmetry(
-        lattice, positions, numbers, magmoms
+        lattice, positions, numbers, magmoms, backend=backend
     )
 
     assert sog.spin_only_group_type == SpinOnlyGroupType.COLLINEAR
@@ -205,7 +218,9 @@ def test_get_spin_symmetry(rutile):
     for rot, trans, srot in zip(rotations, translations, spin_rotations):
         for i in range(len(expects)):
             if (not found[i]) and np.allclose(rot, expects[i][0]):
-                assert np.allclose(trans, expects[i][1])
+                diff = trans - expects[i][1]
+                diff -= np.rint(diff)
+                assert np.allclose(diff, 0)
                 assert np.allclose(srot, expects[i][2])
                 found[i] = True
 

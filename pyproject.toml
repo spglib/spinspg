@@ -36,8 +36,9 @@ dependencies = [
     "typing_extensions",
     "numpy>=1.20.1",
     "spglib>=2.5",
-    "hsnf>=0.3.15",  # Hermite normal form
+    "hsnf>=0.3.15", # Hermite normal form
     "spgrep>=0.3.2",
+    "moyopy>=0.7.1",
 ]
 
 [project.urls]
@@ -64,6 +65,7 @@ dev = [
     "spinspg[docs]",
     "spgrep-modulation>=0.2.5",
     "toml",
+    "ipython",
 ]
 
 [dependency-groups]
