@@ -102,11 +102,12 @@ def test_spin_space_groups(
     assert num_sym >= len(mag_symmetry["rotations"])
 
 
+@pytest.mark.parametrize("mag_symprec", [1e-5, None])
 @pytest.mark.parametrize("backend", ["spglib", "moyopy"])
-def test_get_spin_symmetry(rutile, backend: SYMMETRY_FINDER_BACKEND):
+def test_get_spin_symmetry(rutile, mag_symprec: float | None, backend: SYMMETRY_FINDER_BACKEND):
     lattice, positions, numbers, magmoms = rutile
     sog, rotations, translations, spin_rotations = get_spin_symmetry(
-        lattice, positions, numbers, magmoms, backend=backend
+        lattice, positions, numbers, magmoms, mag_symprec=mag_symprec, backend=backend
     )
 
     assert sog.spin_only_group_type == SpinOnlyGroupType.COLLINEAR

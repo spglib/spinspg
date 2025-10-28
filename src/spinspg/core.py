@@ -23,6 +23,7 @@ def get_spin_symmetry(
     numbers: NDArrayInt,
     magmoms: NDArrayFloat,
     symprec: float = 1e-5,
+    mag_symprec: float | None = None,
     angle_tolerance: float = -1.0,
     backend: SYMMETRY_FINDER_BACKEND = "spglib",
 ) -> tuple[SpinOnlyGroup, NDArrayInt, NDArrayFloat, NDArrayFloat]:
@@ -43,6 +44,8 @@ def get_spin_symmetry(
         ``magmoms[i, :]`` is a magnetic moments at the ``i``-th site in Cartesian coordinates.
     symprec: float, default=1e-5
         See :ref:`spglib:variables_symprec`.
+    mag_symprec: float | None
+        See :ref:`spglib:variables_mag_symprec`.
     angle_tolerance: float, default=-1
         See :ref:`spglib:variables_angle_tolerance`.
 
@@ -61,7 +64,9 @@ def get_spin_symmetry(
     ns = get_symmetry_with_cell(
         lattice, positions, numbers, symprec, angle_tolerance, backend=backend
     )
-    ssg = get_primitive_spin_symmetry(ns, magmoms, symprec)
+    ssg = get_primitive_spin_symmetry(
+        ns, magmoms, mag_symprec=mag_symprec if mag_symprec is not None else symprec
+    )
 
     spin_only_group = ssg.spin_only_group
     tmat = ssg.transformation
