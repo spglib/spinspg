@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Literal
 
 import numpy as np
 from hsnf import column_style_hermite_normal_form
+from moyopy import Cell, MoyoDataset
 from spglib import get_symmetry_dataset
+from typing_extensions import assert_never
 
 from spinspg.permutation import Permutation, get_symmetry_permutations
 from spinspg.spin import SpinOnlyGroup, SpinOnlyGroupType, get_spin_only_group, solve_procrustes
@@ -16,6 +19,8 @@ from spinspg.utils import (
     is_integer_array,
     ndarray2d_to_integer_tuple,
 )
+
+SYMMETRY_FINDER_BACKEND = Literal["spglib", "moyopy"]
 
 
 @dataclass
@@ -55,12 +60,27 @@ def get_symmetry_with_cell(
     numbers: NDArrayInt,
     symprec: float,
     angle_tolerance: float,
+    backend: SYMMETRY_FINDER_BACKEND = "spglib",
 ) -> NonmagneticSymmetry:
     """Find spatial symmetry operations from nonmagnetic crystal structure."""
-    dataset = get_symmetry_dataset((lattice, positions, numbers), symprec, angle_tolerance)
-    rotations = dataset.rotations
-    translations = dataset.translations
-    prim_lattice = dataset.primitive_lattice
+    if backend == "spglib":
+        dataset = get_symmetry_dataset((lattice, positions, numbers), symprec, angle_tolerance)
+        rotations = dataset.rotations
+        translations = dataset.translations
+        prim_lattice = dataset.primitive_lattice
+    elif backend == "moyopy":
+        cell = Cell(basis=lattice.tolist(), positions=positions.tolist(), numbers=numbers.tolist())
+        dataset = MoyoDataset(
+            cell,
+            symprec=symprec,
+            angle_tolerance=float(np.deg2rad(angle_tolerance)) if angle_tolerance > 0 else None,
+            rotate_basis=False,
+        )
+        rotations = np.array(dataset.operations.rotations, dtype=int)
+        translations = np.array(dataset.operations.translations)
+        prim_lattice = np.array(dataset.prim_std_cell.basis)
+    else:
+        assert_never(backend)
 
     # Unique by rotation parts
     uniq_rotations = []

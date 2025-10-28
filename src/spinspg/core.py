@@ -6,7 +6,11 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from spinspg.group import get_primitive_spin_symmetry, get_symmetry_with_cell
+from spinspg.group import (
+    SYMMETRY_FINDER_BACKEND,
+    get_primitive_spin_symmetry,
+    get_symmetry_with_cell,
+)
 
 if TYPE_CHECKING:
     from spinspg.spin import SpinOnlyGroup
@@ -20,6 +24,7 @@ def get_spin_symmetry(
     magmoms: NDArrayFloat,
     symprec: float = 1e-5,
     angle_tolerance: float = -1.0,
+    backend: SYMMETRY_FINDER_BACKEND = "spglib",
 ) -> tuple[SpinOnlyGroup, NDArrayInt, NDArrayFloat, NDArrayFloat]:
     """Return spin symmetry operations of a given spin arrangement.
 
@@ -53,7 +58,9 @@ def get_spin_symmetry(
         Spin rotation parts of spin symmetry operations in Cartesian coordinates.
 
     """
-    ns = get_symmetry_with_cell(lattice, positions, numbers, symprec, angle_tolerance)
+    ns = get_symmetry_with_cell(
+        lattice, positions, numbers, symprec, angle_tolerance, backend=backend
+    )
     ssg = get_primitive_spin_symmetry(ns, magmoms, symprec)
 
     spin_only_group = ssg.spin_only_group
