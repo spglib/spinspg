@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.3.1 (29 Oct. 2025)
+
+- Add option to specify `mag_symprec` in `get_spin_symmetry`
+
 ## v0.3.0 (28 Oct. 2025)
 
 - Add moyopy backend support for symmetry search
