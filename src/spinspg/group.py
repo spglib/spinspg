@@ -129,9 +129,10 @@ def get_symmetry_with_cell(
         prim_translations.append(tmat @ trans)
 
     prim_centerings = []
+    epsilon = symprec / (np.abs(np.linalg.det(lattice)) ** (1 / 3))
     for centering in centerings:
         prim_centering = tmat @ centering
-        assert is_integer_array(prim_centering)
+        assert is_integer_array(prim_centering, atol=epsilon)
         prim_centerings.append(np.around(prim_centering).astype(int))
 
     return NonmagneticSymmetry(
