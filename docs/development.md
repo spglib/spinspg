@@ -29,8 +29,8 @@ Optional cProfile passes run after the unprofiled measurements. Use
 
 The retained changes use indexed permutation composition, species-grouped site
 candidates, exact integer-rotation identity checks, batched rotation-integrality
-checks, and direct collinear comparisons with the original absolute and relative
-tolerances. Batching distances over candidate sites was also measured, but made
+checks, and reuse of the transformed axis in collinear comparisons with
+`np.allclose`. Batching distances over candidate sites was also measured, but made
 site matching slower on this example; the scalar Cartesian norm was retained.
 
 The rutile operation oracle and analytic FCC operation sets cover both backends,

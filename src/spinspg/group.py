@@ -342,11 +342,9 @@ def purify_spin_rotation(
         axis = spin_only_group.axis
         assert isinstance(axis, np.ndarray)
         mapped_axis = W @ axis
-        # Same componentwise bound as allclose, including its default rtol.
-        tolerance = atol + 1e-5 * np.abs(axis)
-        if np.all(np.abs(mapped_axis - axis) <= tolerance):
+        if np.allclose(mapped_axis, axis, atol=atol):
             return identity
-        elif np.all(np.abs(mapped_axis + axis) <= tolerance):
+        elif np.allclose(mapped_axis, -axis, atol=atol):
             # mirror along axis
             return _get_mirror_along_axis(axis)
         else:
