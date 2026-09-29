@@ -27,12 +27,8 @@ class Permutation:
 
         (self * rhs)(i) = self(rhs(i))
         """
-        n = len(self.permutation)
-        assert len(rhs.permutation) == n
-        mul = np.zeros(n, dtype=np.int_)
-        for i in range(n):
-            mul[i] = self(rhs(i))
-        return Permutation(mul)
+        assert len(rhs.permutation) == len(self.permutation)
+        return Permutation(np.asarray(self.permutation)[rhs.permutation])
 
 
 def get_symmetry_permutations(
@@ -43,25 +39,33 @@ def get_symmetry_permutations(
     translations: NDArrayFloat,
     symprec: float,
 ) -> list[Permutation]:
-    """Return permutations of sites from given symmetry operations."""
+    """Return site permutations in the same order as the supplied operations.
+
+    Raise ``ValueError`` if an operation cannot match every site. Matching is
+    greedy in input-site order with a strict Cartesian distance threshold.
+    """
     num_sites = len(positions)
+    sites_by_species = {
+        number: np.flatnonzero(numbers == number).tolist() for number in np.unique(numbers)
+    }
 
     permutations = []
     for rot, trans in zip(rotations, translations):
         new_positions = positions @ rot.T + trans[None, :]
-        perm = [-1 for _ in range(num_sites)]
+        perm = np.empty(num_sites, dtype=np.int_)
         found = [False for _ in range(num_sites)]
         for i in range(num_sites):
-            for j in range(num_sites):
-                if found[j] or (numbers[i] != numbers[j]):
+            for j in sites_by_species[numbers[i]]:
+                if found[j]:
                     continue
                 if is_overlap_with_origin(lattice, new_positions[i] - positions[j], symprec):
+                    # Keep the first available matching site, not the nearest site.
                     perm[i] = j
                     found[j] = True
                     break
-
-        if np.all(perm != -1):
-            permutations.append(Permutation(perm))
+            else:
+                raise ValueError("Symmetry operation does not map all sites within symprec")
+        permutations.append(Permutation(perm))
 
     return permutations
 

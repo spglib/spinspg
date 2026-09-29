@@ -1,5 +1,11 @@
 # Change Log
 
+## Unreleased
+
+- Vectorize permutation composition, group site-matching candidates by species,
+  batch rotation checks, and reduce overhead in collinear spin comparisons.
+- Reject incomplete site permutations instead of allowing unmatched site indices.
+
 ## v0.3.2 (29 Oct. 2025)
 
 -  Properly compare fractional-coordinate tolerance

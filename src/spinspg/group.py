@@ -87,8 +87,9 @@ def get_symmetry_with_cell(
     uniq_translations = []
     centerings = []
     found_rotations = set()
+    identity = np.eye(3, dtype=np.int_)
     for rot, trans in zip(rotations, translations):
-        if np.allclose(rot, np.eye(3)):
+        if np.array_equal(rot, identity):
             centerings.append(trans)
 
         rot_int = ndarray2d_to_integer_tuple(rot)
@@ -276,14 +277,20 @@ def get_primitive_spin_symmetry(
 
     # Spin space group search
     nontrivial_coset = []
-    for rot, trans, perm in zip(
-        nonmagnetic_symmetry.prim_rotations,
+    # Batch the same is_integer_array comparison over the rotation candidates.
+    rotations_prim = invtmat_stg @ nonmagnetic_symmetry.prim_rotations @ tmat_stg
+    compatible = np.all(
+        np.isclose(np.around(rotations_prim).astype(int), rotations_prim, rtol=1e-5, atol=1e-8),
+        axis=(1, 2),
+    )
+    for rot_prim, trans, perm, is_compatible in zip(
+        rotations_prim,
         nonmagnetic_symmetry.prim_translations,
         nonmagnetic_symmetry.prim_permutations,
+        compatible,
     ):
         # Point group symmetry compatible with the primitive cell
-        rot_prim = invtmat_stg @ rot @ tmat_stg
-        if not is_integer_array(rot_prim):
+        if not is_compatible:
             continue
 
         # Need to consider centerings for subgroup
@@ -334,9 +341,10 @@ def purify_spin_rotation(
         # normalizer of spin_only_group: infty/mm = (infty m) x m (ITA Table 3.5.4.2)
         axis = spin_only_group.axis
         assert isinstance(axis, np.ndarray)
-        if np.allclose(W @ axis, axis, atol=atol):
+        mapped_axis = W @ axis
+        if np.allclose(mapped_axis, axis, atol=atol):
             return identity
-        elif np.allclose(W @ axis, -axis, atol=atol):
+        elif np.allclose(mapped_axis, -axis, atol=atol):
             # mirror along axis
             return _get_mirror_along_axis(axis)
         else:
