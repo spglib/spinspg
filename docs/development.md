@@ -62,7 +62,7 @@ and moyopy 0.7.1, using the spglib backend (seconds per 256-frame pass):
 | Implementation | Repeated one-shot calls | Cold distinct cells | Prepared evaluations |
 | --- | ---: | ---: | ---: |
 | Original (`e0bd13f`) | 2.119 | 2.129 | — |
-| Reuse API, before Python optimizations (`96587a0`) | 2.031 | 2.111 | 0.869 |
+| Reuse API, before Python optimizations (`5603229`) | 2.031 | 2.111 | 0.869 |
 | Reuse API and Python optimizations | 1.566 | 1.591 | 0.476 |
 
 The final preparation took about 4 ms. Including that cost, the repeated prepared
