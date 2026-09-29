@@ -110,3 +110,16 @@ def test_prepared_moment_shape(rutile, shape):
     prepared = prepare_spin_symmetry(*rutile[:3])
     with pytest.raises(ValueError, match=r"magmoms must have shape \(6, 3\)"):
         prepared.get_spin_symmetry(np.zeros(shape))
+
+
+@pytest.mark.parametrize("backend", ["spglib", "moyopy"])
+def test_independent_geometry_tolerances(backend):
+    lattice = np.diag([1.0, 1.0, 1.0002])
+    positions = np.zeros((1, 3))
+    numbers = np.array([0])
+    moments = np.zeros((1, 3))
+    tetragonal = prepare_spin_symmetry(lattice, positions, numbers, symprec=1e-5, backend=backend)
+    cubic = prepare_spin_symmetry(lattice, positions, numbers, symprec=1e-3, backend=backend)
+    for prepared, order in [(tetragonal, 16), (cubic, 48), (tetragonal, 16)]:
+        _, rotations, _, _ = prepared.get_spin_symmetry(moments)
+        assert len(rotations) == order

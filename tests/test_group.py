@@ -276,3 +276,22 @@ def test_purify_spin_rotation(
 ):
     actual = purify_spin_rotation(W, spin_only_group)
     assert np.allclose(actual, expect)
+
+
+@pytest.mark.parametrize("axis", [np.array([1.0, 0, 0]), np.array([1.0, 2, 3]) / np.sqrt(14)])
+@pytest.mark.parametrize("sign", [-1, 1])
+@pytest.mark.parametrize("factor", [0.99, 1.01])
+def test_purify_collinear_tolerance(axis, sign, factor):
+    atol = 1e-5
+    mapped = sign * axis.copy()
+    mapped[1] += factor * (atol + 1e-5 * abs(axis[1]))
+    rotation = np.outer(mapped, axis)
+    sog = SpinOnlyGroup.collinear(axis)
+    # Pin both the absolute and relative parts of the original allclose check.
+    if np.allclose(rotation @ axis, axis, atol=atol):
+        expected = np.eye(3)
+    elif np.allclose(rotation @ axis, -axis, atol=atol):
+        expected = np.eye(3) - 2 * np.outer(axis, axis)
+    else:
+        expected = rotation
+    np.testing.assert_array_equal(purify_spin_rotation(rotation, sog, atol), expected)
