@@ -13,6 +13,7 @@ from spinspg.group import (
 )
 
 if TYPE_CHECKING:
+    from spinspg.group import SpinSpaceGroup
     from spinspg.spin import SpinOnlyGroup
     from spinspg.utils import NDArrayFloat, NDArrayInt
 
@@ -67,7 +68,13 @@ def get_spin_symmetry(
     ssg = get_primitive_spin_symmetry(
         ns, magmoms, mag_symprec=mag_symprec if mag_symprec is not None else symprec
     )
+    return _expand_spin_symmetry(ssg)
 
+
+def _expand_spin_symmetry(
+    ssg: SpinSpaceGroup,
+) -> tuple[SpinOnlyGroup, NDArrayInt, NDArrayFloat, NDArrayFloat]:
+    """Expand primitive spin symmetry operations into the input cell."""
     spin_only_group = ssg.spin_only_group
     tmat = ssg.transformation
     invtmat = np.linalg.inv(tmat)
