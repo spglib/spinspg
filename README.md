@@ -58,27 +58,6 @@ print(f"Translation ({idx})\n{translations[idx]}")
 print(f"Spin rotation ({idx})\n{spin_rotations[idx]}")  # -> diag([1, 1, -1])
 ```
 
-For multiple moment fields on the same crystal, prepare its nonmagnetic symmetry
-once:
-
-```python
-from spinspg import prepare_spin_symmetry
-
-prepared = prepare_spin_symmetry(lattice, positions, numbers, symprec=1e-3)
-for angle in np.linspace(0, 2 * np.pi, 256, endpoint=False):
-    moments = np.zeros((len(positions), 3))
-    moments[0] = 2.5 * np.array([np.sin(angle), 0, np.cos(angle)])
-    moments[1] = -moments[0]
-    sog, rotations, translations, spin_rotations = prepared.get_spin_symmetry(moments)
-```
-
-Moments must follow the original site order. Results have the same format and
-input-cell coordinates as `get_spin_symmetry`. The preparation owns its geometry;
-changing the original arrays does not change it. Prepare a new object for another
-lattice, ordered positions, species, geometry tolerance, or backend. The magnetic
-tolerance can vary per evaluation via `mag_symprec` and otherwise defaults to the
-preparation's `symprec`.
-
 ## Installation
 
 ```shell

@@ -82,17 +82,6 @@ def main():
         "repeats": args.repeats,
     }
     workloads = {"repeated": repeated, "cold_distinct_cells": cold}
-    if hasattr(spinspg, "prepare_spin_symmetry"):
-        start = perf_counter()
-        prepared = spinspg.prepare_spin_symmetry(lattice, positions, numbers, **options)
-        measurements["preparation_seconds"] = perf_counter() - start
-
-        def reuse():
-            for moments in fields:
-                prepared.get_spin_symmetry(moments)
-
-        workloads["prepared"] = reuse
-
     for name, run in workloads.items():
         times = []
         for _ in range(args.repeats):

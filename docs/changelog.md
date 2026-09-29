@@ -2,8 +2,6 @@
 
 ## Unreleased
 
-- Add `prepare_spin_symmetry` and `PreparedSpinSymmetry` to reuse nonmagnetic
-  symmetry and site permutations across moment fields on a fixed crystal.
 - Vectorize permutation composition, group site-matching candidates by species,
   batch rotation checks, and reduce overhead in collinear spin comparisons.
 - Reject incomplete site permutations instead of allowing unmatched site indices.
