@@ -1,5 +1,10 @@
 # Change Log
 
+## Unreleased
+
+- Add `prepare_spin_symmetry` and `PreparedSpinSymmetry` to reuse nonmagnetic
+  symmetry and site permutations across moment fields on a fixed crystal.
+
 ## v0.3.2 (29 Oct. 2025)
 
 -  Properly compare fractional-coordinate tolerance

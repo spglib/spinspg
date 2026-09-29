@@ -49,6 +49,8 @@ def get_spin_symmetry(
         See :ref:`spglib:variables_mag_symprec`.
     angle_tolerance: float, default=-1
         See :ref:`spglib:variables_angle_tolerance`.
+    backend: {"spglib", "moyopy"}, default="spglib"
+        Backend for finding the nonmagnetic symmetry.
 
     Returns
     -------
@@ -62,13 +64,129 @@ def get_spin_symmetry(
         Spin rotation parts of spin symmetry operations in Cartesian coordinates.
 
     """
-    ns = get_symmetry_with_cell(
-        lattice, positions, numbers, symprec, angle_tolerance, backend=backend
-    )
-    ssg = get_primitive_spin_symmetry(
-        ns, magmoms, mag_symprec=mag_symprec if mag_symprec is not None else symprec
-    )
-    return _expand_spin_symmetry(ssg)
+    return prepare_spin_symmetry(
+        lattice, positions, numbers, symprec, angle_tolerance, backend
+    ).get_spin_symmetry(magmoms, mag_symprec)
+
+
+class PreparedSpinSymmetry:
+    """Reusable nonmagnetic symmetry for a fixed, ordered crystal.
+
+    Construct with :func:`prepare_spin_symmetry`. Geometry inputs are copied
+    during preparation, and only private derived geometry is retained. Mutating
+    the original inputs cannot affect this object. Prepare another object when
+    the lattice, ordered positions, species, geometry tolerances, or backend
+    changes. Magnetic moments and returned results are never cached.
+    """
+
+    def __init__(
+        self,
+        lattice: NDArrayFloat,
+        positions: NDArrayFloat,
+        numbers: NDArrayInt,
+        symprec: float = 1e-5,
+        angle_tolerance: float = -1.0,
+        backend: SYMMETRY_FINDER_BACKEND = "spglib",
+    ) -> None:
+        lattice = np.array(lattice, dtype=np.float64, copy=True)
+        positions = np.array(positions, dtype=np.float64, copy=True)
+        numbers = np.array(numbers, dtype=np.int_, copy=True)
+        self._num_sites = len(positions)
+        self._symprec = symprec
+        self._angle_tolerance = angle_tolerance
+        self._backend = backend
+        self._nonmagnetic_symmetry = get_symmetry_with_cell(
+            lattice, positions, numbers, symprec, angle_tolerance, backend=backend
+        )
+
+    @property
+    def num_sites(self) -> int:
+        """Number of sites in the input cell, including nonmagnetic sites."""
+        return self._num_sites
+
+    @property
+    def symprec(self) -> float:
+        """Fixed geometry tolerance and default magnetic tolerance."""
+        return self._symprec
+
+    @property
+    def angle_tolerance(self) -> float:
+        """Fixed angle tolerance in degrees; negative means backend default."""
+        return self._angle_tolerance
+
+    @property
+    def backend(self) -> SYMMETRY_FINDER_BACKEND:
+        """Backend used to prepare the nonmagnetic symmetry."""
+        return self._backend
+
+    def get_spin_symmetry(
+        self, magmoms: NDArrayFloat, mag_symprec: float | None = None
+    ) -> tuple[SpinOnlyGroup, NDArrayInt, NDArrayFloat, NDArrayFloat]:
+        """Evaluate a moment field without repeating geometry preparation.
+
+        Parameters
+        ----------
+        magmoms: array, (num_sites, 3)
+            Cartesian magnetic moments in the original input site order.
+        mag_symprec: float | None
+            Magnetic tolerance. Defaults to this preparation's ``symprec``.
+
+        Returns
+        -------
+        tuple
+            The same spin-only group, rotations, translations, and spin rotations
+            as :func:`get_spin_symmetry`, in the original input cell and operation
+            order. Each call returns independent results.
+
+        Raises
+        ------
+        ValueError
+            If the moment array does not have shape ``(num_sites, 3)``.
+        """
+        magmoms = np.asarray(magmoms, dtype=np.float64)
+        if magmoms.shape != (self.num_sites, 3):
+            raise ValueError(f"magmoms must have shape ({self.num_sites}, 3)")
+        ssg = get_primitive_spin_symmetry(
+            self._nonmagnetic_symmetry,
+            magmoms,
+            mag_symprec=self.symprec if mag_symprec is None else mag_symprec,
+        )
+        return _expand_spin_symmetry(ssg)
+
+
+def prepare_spin_symmetry(
+    lattice: NDArrayFloat,
+    positions: NDArrayFloat,
+    numbers: NDArrayInt,
+    symprec: float = 1e-5,
+    angle_tolerance: float = -1.0,
+    backend: SYMMETRY_FINDER_BACKEND = "spglib",
+) -> PreparedSpinSymmetry:
+    """Prepare a crystal once for evaluating multiple magnetic moment fields.
+
+    Parameters
+    ----------
+    lattice: array, (3, 3)
+        Lattice basis vectors as rows, in Cartesian coordinates.
+    positions: array, (num_sites, 3)
+        Fractional site coordinates with respect to ``lattice``.
+    numbers: array[int], (num_sites,)
+        Species identifiers in the same site order as ``positions``.
+    symprec: float, default=1e-5
+        Geometry tolerance; also the default magnetic tolerance for evaluations.
+    angle_tolerance: float, default=-1
+        Angle tolerance in degrees. A negative value uses the backend default.
+    backend: {"spglib", "moyopy"}, default="spglib"
+        Backend for finding the nonmagnetic symmetry.
+
+    Returns
+    -------
+    PreparedSpinSymmetry
+        An owned preparation for this geometry, site order, and tolerance/backend
+        choice. Call its :meth:`PreparedSpinSymmetry.get_spin_symmetry` with each
+        moment field. Changes to the original arrays do not alter the preparation.
+    """
+    return PreparedSpinSymmetry(lattice, positions, numbers, symprec, angle_tolerance, backend)
 
 
 def _expand_spin_symmetry(

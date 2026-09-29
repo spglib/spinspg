@@ -2,7 +2,11 @@
 
 from importlib.metadata import PackageNotFoundError, version
 
-from spinspg.core import get_spin_symmetry  # noqa: F401
+from spinspg.core import (  # noqa: F401
+    PreparedSpinSymmetry,
+    get_spin_symmetry,
+    prepare_spin_symmetry,
+)
 
 # https://github.com/pypa/setuptools_scm/#retrieving-package-version-at-runtime
 try:

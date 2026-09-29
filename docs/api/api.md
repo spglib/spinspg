@@ -6,6 +6,15 @@
     .. autofunction:: spinspg.get_spin_symmetry
 ```
 
+```{eval-rst}
+    .. autofunction:: spinspg.prepare_spin_symmetry
+```
+
+```{eval-rst}
+    .. autoclass:: spinspg.PreparedSpinSymmetry
+        :members:
+```
+
 ## Spin-only group
 
 ```{eval-rst}
